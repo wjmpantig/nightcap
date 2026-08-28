@@ -1,6 +1,15 @@
-import { Icon } from './Icon.jsx'
+import type { HTMLAttributes, ReactNode } from 'react'
+import { Icon } from './Icon'
 
-export function EmptyState({ icon = 'moon', title, children, action, style, ...rest }) {
+export interface EmptyStateProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
+  /** Lucide name. Defaults to "moon". */
+  icon?: string
+  title: ReactNode
+  action?: ReactNode
+}
+
+
+export function EmptyState({ icon = 'moon', title, children, action, style, ...rest }: EmptyStateProps) {
   return (
     <div
       {...rest}

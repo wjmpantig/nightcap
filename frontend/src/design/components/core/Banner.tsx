@@ -1,5 +1,15 @@
-import { Icon } from './Icon.jsx'
-import { IconButton } from './IconButton.jsx'
+import type { HTMLAttributes, ReactNode } from 'react'
+import { Icon } from './Icon'
+import { IconButton } from './IconButton'
+
+export interface BannerProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
+  tone?: 'info' | 'warning' | 'error'
+  title?: ReactNode
+  /** Buttons rendered at the right edge. */
+  action?: ReactNode
+  onDismiss?: () => void
+}
+
 
 const TONES = {
   info: { color: 'var(--text-accent)', bg: 'var(--moonlight-a08)', border: 'var(--moonlight-a32)', icon: 'info' },
@@ -7,7 +17,7 @@ const TONES = {
   error: { color: 'var(--danger)', bg: 'var(--ember-a12)', border: 'color-mix(in oklch,var(--danger) 32%,transparent)', icon: 'shield-alert' },
 }
 
-export function Banner({ tone = 'info', title, children, action, onDismiss, style, ...rest }) {
+export function Banner({ tone = 'info', title, children, action, onDismiss, style, ...rest }: BannerProps) {
   const t = TONES[tone] || TONES.info
   return (
     <div

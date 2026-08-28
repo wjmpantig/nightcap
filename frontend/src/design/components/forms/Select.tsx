@@ -1,4 +1,18 @@
-import { Icon } from '../core/Icon.jsx'
+import type { SelectHTMLAttributes } from 'react'
+import { Icon } from '../core/Icon'
+
+export interface SelectOption {
+  value: string | number
+  label: string
+}
+
+export interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement>, 'children' | 'width'> {
+  options: SelectOption[]
+  /** Rendered as an empty-value first option — used for action menus like "Snooze…". */
+  placeholder?: string
+  width?: number | string
+}
+
 
 const CSS = `
 .nc-select{position:relative;display:inline-flex;align-items:center;height:var(--control-height);
@@ -20,7 +34,7 @@ function inject() {
 }
 inject()
 
-export function Select({ value, onChange, options = [], placeholder, width, disabled, style, ...rest }) {
+export function Select({ value, onChange, options = [], placeholder, width, disabled, style, ...rest }: SelectProps) {
   return (
     <div className="nc-select" style={{ width, opacity: disabled ? 0.45 : 1, ...style }}>
       <select value={value} onChange={onChange} disabled={disabled} {...rest}>

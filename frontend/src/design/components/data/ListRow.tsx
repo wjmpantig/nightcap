@@ -1,3 +1,18 @@
+import type { HTMLAttributes, ReactNode } from 'react'
+
+export interface ListRowProps extends HTMLAttributes<HTMLDivElement> {
+  /** Fixed-width status slot: a Badge, Mark or state dot. */
+  leading?: ReactNode
+  /** Right-aligned secondary text (timestamps, "after 22m idle"). */
+  meta?: ReactNode
+  /** Controls pinned to the right edge. */
+  actions?: ReactNode
+  selected?: boolean
+  /** Dims the row — used for snoozed entries. */
+  muted?: boolean
+  interactive?: boolean
+}
+
 const CSS = `
 .nc-row{display:flex;align-items:center;gap:var(--space-5);min-height:var(--row-height);
   padding:var(--space-3) var(--pad-panel);border-top:1px solid var(--line);
@@ -18,7 +33,7 @@ function inject() {
 }
 inject()
 
-export function ListRow({ leading, children, meta, actions, selected, muted, interactive = true, style, ...rest }) {
+export function ListRow({ leading, children, meta, actions, selected, muted, interactive = true, style, ...rest }: ListRowProps) {
   const cls = ['nc-row', interactive && 'nc-row--hover', selected && 'nc-row--selected',
     muted && 'nc-row--muted'].filter(Boolean).join(' ')
   return (

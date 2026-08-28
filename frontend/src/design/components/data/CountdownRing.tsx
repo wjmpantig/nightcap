@@ -1,5 +1,17 @@
+import type { HTMLAttributes } from 'react'
+
+export interface CountdownRingProps extends HTMLAttributes<HTMLDivElement> {
+  /** Seconds left. */
+  remaining: number
+  /** Seconds the countdown started from (the configured warning window). */
+  total: number
+  size?: number
+  /** Stroke colour. Defaults to --state-closed. */
+  tone?: string
+}
+
 // Linear ring — a countdown must be readable as time, so no easing and no pulse.
-export function CountdownRing({ remaining, total, size = 84, tone = 'var(--state-closed)', style, ...rest }) {
+export function CountdownRing({ remaining, total, size = 84, tone = 'var(--state-closed)', style, ...rest }: CountdownRingProps) {
   const r = size / 2 - 4
   const c = 2 * Math.PI * r
   const frac = total > 0 ? Math.max(0, Math.min(1, remaining / total)) : 0

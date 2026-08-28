@@ -1,4 +1,12 @@
-import { Icon } from '../core/Icon.jsx'
+import type { InputHTMLAttributes, ReactNode } from 'react'
+import { Icon } from '../core/Icon'
+
+export interface CheckboxProps extends InputHTMLAttributes<HTMLInputElement> {
+  label: ReactNode
+  /** Second line explaining the consequence of the setting. */
+  hint?: ReactNode
+}
+
 
 const CSS = `
 .nc-check{display:inline-flex;align-items:flex-start;gap:var(--space-4);cursor:pointer;
@@ -23,7 +31,7 @@ function inject() {
 }
 inject()
 
-export function Checkbox({ checked, onChange, label, hint, disabled, style, ...rest }) {
+export function Checkbox({ checked, onChange, label, hint, disabled, style, ...rest }: CheckboxProps) {
   return (
     <label className={'nc-check' + (disabled ? ' nc-check--disabled' : '')} style={style}>
       <input type="checkbox" checked={!!checked} onChange={onChange} disabled={disabled} {...rest} />

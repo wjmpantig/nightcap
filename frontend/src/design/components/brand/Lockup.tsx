@@ -1,6 +1,19 @@
-import { Mark } from './Mark.jsx'
+import type { HTMLAttributes } from 'react'
+import { Mark } from './Mark'
 
-export function Lockup({ size = 22, variant = 'solid', tagline, style, ...rest }) {
+/**
+ * Horizontal lockup: mark + "nightcap" wordmark in Space Grotesk Medium at -0.035em.
+ */
+export interface LockupProps extends HTMLAttributes<HTMLDivElement> {
+  /** Wordmark font-size in px; the mark scales from it. */
+  size?: number
+  variant?: 'solid' | 'duotone' | 'outline'
+  /** Optional second line, sentence case, no period. */
+  tagline?: string
+}
+
+
+export function Lockup({ size = 22, variant = 'solid', tagline, style, ...rest }: LockupProps) {
   return (
     <div {...rest} style={{ display: 'inline-flex', alignItems: 'center', gap: size * 0.42, ...style }}>
       <Mark size={size * 1.15} variant={variant} title="nightcap" />

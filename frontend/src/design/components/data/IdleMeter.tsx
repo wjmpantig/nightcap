@@ -1,9 +1,19 @@
-function mmss(secs) {
+import type { HTMLAttributes } from 'react'
+
+export interface IdleMeterProps extends HTMLAttributes<HTMLDivElement> {
+  /** Seconds since the last keyboard or mouse input. */
+  idleSecs: number
+  /** The timeout this meter is filling toward. */
+  timeoutMinutes: number
+  label?: string
+}
+
+function mmss(secs: number) {
   const s = Math.max(0, Math.round(secs))
   return `${Math.floor(s / 60)}m ${String(s % 60).padStart(2, '0')}s`
 }
 
-export function IdleMeter({ idleSecs, timeoutMinutes, label = 'Idle', style, ...rest }) {
+export function IdleMeter({ idleSecs, timeoutMinutes, label = 'Idle', style, ...rest }: IdleMeterProps) {
   const total = timeoutMinutes * 60
   const frac = total > 0 ? Math.max(0, Math.min(1, idleSecs / total)) : 0
   const near = frac > 0.75

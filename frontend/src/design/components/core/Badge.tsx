@@ -1,4 +1,19 @@
-import { Icon } from './Icon.jsx'
+import type { HTMLAttributes } from 'react'
+import { Icon } from './Icon'
+
+/**
+ * State pill. Tone is meaning, not decoration: one hue per state across the whole product.
+ */
+export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
+  /** awake = holding a wake lock · watched = armed · snoozed = paused · closed = terminated · locked = driver/service */
+  tone?: 'neutral' | 'awake' | 'watched' | 'closed' | 'snoozed' | 'locked'
+  /** Leading 5px status dot. */
+  dot?: boolean
+  /** Lucide icon name shown before the label. */
+  icon?: string
+  shape?: 'pill' | 'square'
+}
+
 
 const CSS = `
 .nc-badge{display:inline-flex;align-items:center;gap:var(--space-2);height:20px;
@@ -25,7 +40,7 @@ function inject() {
 }
 inject()
 
-export function Badge({ tone = 'neutral', dot = false, icon, shape = 'pill', children, style, ...rest }) {
+export function Badge({ tone = 'neutral', dot = false, icon, shape = 'pill', children, style, ...rest }: BadgeProps) {
   const t = TONES[tone] || TONES.neutral
   return (
     <span className={'nc-badge' + (shape === 'square' ? ' nc-badge--square' : '')}

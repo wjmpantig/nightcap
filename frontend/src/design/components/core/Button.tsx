@@ -1,4 +1,20 @@
-import { Icon } from './Icon.jsx'
+import type { ButtonHTMLAttributes } from 'react'
+import { Icon } from './Icon'
+
+/**
+ * The one text button. Primary is moonlight-on-night and appears at most once per view;
+ * destructive actions are the outlined danger variant, never a filled red block.
+ */
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'primary' | 'secondary' | 'ghost' | 'danger'
+  size?: 'sm' | 'md' | 'lg'
+  /** Lucide icon name placed before the label. */
+  icon?: string
+  /** Lucide icon name placed after the label. */
+  iconRight?: string
+  block?: boolean
+}
+
 
 const CSS = `
 .nc-btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--space-3);
@@ -35,7 +51,7 @@ inject()
 export function Button({
   variant = 'secondary', size = 'md', icon, iconRight, block = false,
   children, className = '', ...rest
-}) {
+}: ButtonProps) {
   const cls = ['nc-btn', 'nc-btn--' + variant, size !== 'md' && 'nc-btn--' + size,
     block && 'nc-btn--block', className].filter(Boolean).join(' ')
   return (

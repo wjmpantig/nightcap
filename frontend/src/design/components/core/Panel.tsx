@@ -1,4 +1,12 @@
-export function Panel({ tone = 'default', pad = true, children, style, ...rest }) {
+import type { HTMLAttributes } from 'react'
+
+export interface PanelProps extends HTMLAttributes<HTMLElement> {
+  tone?: 'default' | 'sunken' | 'accent' | 'quiet'
+  /** Set false when the panel holds a full-bleed list. */
+  pad?: boolean
+}
+
+export function Panel({ tone = 'default', pad = true, children, style, ...rest }: PanelProps) {
   const tones = {
     default: { background: 'var(--surface-panel)', borderColor: 'var(--line)' },
     sunken: { background: 'var(--surface-sunken)', borderColor: 'var(--line)' },

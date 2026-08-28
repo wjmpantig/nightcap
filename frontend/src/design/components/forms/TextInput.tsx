@@ -1,4 +1,15 @@
-import { Icon } from '../core/Icon.jsx'
+import type { InputHTMLAttributes, ReactNode } from 'react'
+import { Icon } from '../core/Icon'
+
+export interface TextInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'width'> {
+  /** Lucide icon inside the field's left edge. */
+  icon?: string
+  /** Static trailing text, e.g. ".exe". */
+  suffix?: ReactNode
+  invalid?: boolean
+  width?: number | string
+}
+
 
 const CSS = `
 .nc-input{display:flex;align-items:center;gap:var(--space-3);height:var(--control-height);
@@ -22,7 +33,7 @@ function inject() {
 }
 inject()
 
-export function TextInput({ value, onChange, placeholder, icon, suffix, invalid, disabled, width, style, ...rest }) {
+export function TextInput({ value, onChange, placeholder, icon, suffix, invalid, disabled, width, style, ...rest }: TextInputProps) {
   const cls = ['nc-input', invalid && 'nc-input--invalid', disabled && 'nc-input--disabled'].filter(Boolean).join(' ')
   return (
     <label className={cls} style={{ width, ...style }}>

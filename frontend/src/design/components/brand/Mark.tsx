@@ -1,9 +1,25 @@
+import type { SVGAttributes } from 'react'
 import { useId } from 'react'
+
+/**
+ * The nightcap mark — a moon setting behind a horizon bar. Geometry is fixed; never redraw it.
+ */
+export interface MarkProps extends SVGAttributes<SVGSVGElement> {
+  /** Pixel box. Minimum 16 in a tray, 20 anywhere else. */
+  size?: number
+  /** solid inherits currentColor · duotone is moonlight disc + amber horizon · outline is a hollow moon. */
+  variant?: 'solid' | 'duotone' | 'outline'
+  /** inactive sinks the moon to a sliver — used for "paused" / dimmed tray states. */
+  state?: 'active' | 'inactive'
+  /** Supplying a title makes it an accessible image instead of decoration. */
+  title?: string
+}
+
 
 // Geometry copied verbatim from assets/svg/nightcap-mark.svg (mark 2b "Moonset"):
 // disc r=38 at cy=57 clipped at y=75, horizon bar 94x10 r=5 at y=70.
 // The inactive state sinks the moon to a sliver (assets/svg/state-inactive.svg).
-export function Mark({ size = 24, variant = 'solid', state = 'active', title, style, ...rest }) {
+export function Mark({ size = 24, variant = 'solid', state = 'active', title, style, ...rest }: MarkProps) {
   const id = useId().replace(/:/g, '')
   const active = state === 'active'
   const clipH = active ? 75 : 58

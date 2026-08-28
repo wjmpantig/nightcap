@@ -1,3 +1,11 @@
+import type { InputHTMLAttributes, ReactNode } from 'react'
+
+export interface SwitchProps extends InputHTMLAttributes<HTMLInputElement> {
+  label?: ReactNode
+  /** amber marks a switch whose ON state means "nightcap is not protecting your sleep". */
+  tone?: 'accent' | 'amber'
+}
+
 const CSS = `
 .nc-switch{display:inline-flex;align-items:center;gap:var(--space-5);cursor:pointer;
   font:var(--type-body-strong);color:var(--text-primary)}
@@ -22,7 +30,7 @@ function inject() {
 }
 inject()
 
-export function Switch({ checked, onChange, label, tone = 'accent', disabled, style, ...rest }) {
+export function Switch({ checked, onChange, label, tone = 'accent', disabled, style, ...rest }: SwitchProps) {
   const cls = ['nc-switch', tone === 'amber' && 'nc-switch--amber', disabled && 'nc-switch--disabled']
     .filter(Boolean).join(' ')
   return (

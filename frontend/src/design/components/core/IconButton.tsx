@@ -1,4 +1,16 @@
-import { Icon } from './Icon.jsx'
+import type { ButtonHTMLAttributes } from 'react'
+import { Icon } from './Icon'
+
+export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  /** Lucide icon name. */
+  icon: string
+  /** Required — becomes both aria-label and the native tooltip. */
+  label: string
+  /** Square edge length in px. 24 dense, 28 default, 32 titlebar. */
+  size?: number
+  variant?: 'ghost' | 'outlined' | 'danger' | 'close'
+}
+
 
 const CSS = `
 .nc-iconbtn{display:inline-flex;align-items:center;justify-content:center;
@@ -22,7 +34,7 @@ function inject() {
 }
 inject()
 
-export function IconButton({ icon, label, size = 28, variant = 'ghost', className = '', ...rest }) {
+export function IconButton({ icon, label, size = 28, variant = 'ghost', className = '', ...rest }: IconButtonProps) {
   const cls = ['nc-iconbtn', 'nc-iconbtn--' + variant, className].filter(Boolean).join(' ')
   return (
     <button type="button" aria-label={label} title={label} className={cls}

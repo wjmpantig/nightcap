@@ -1,3 +1,14 @@
+import type { InputHTMLAttributes } from 'react'
+
+/**
+ * Numeric field with a unit label. Every timeout in nightcap is entered through this.
+ */
+export interface NumberFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'width' | 'type'> {
+  /** Unit suffix, e.g. "min" or "sec". */
+  unit?: string
+  width?: number | string
+}
+
 const CSS = `
 .nc-num{display:inline-flex;align-items:center;gap:var(--space-3);height:var(--control-height);
   padding:0 var(--space-4);background:var(--surface-sunken);border:1px solid var(--line-strong);
@@ -20,7 +31,7 @@ function inject() {
 }
 inject()
 
-export function NumberField({ value, onChange, unit, placeholder, min = 1, max, width = 92, disabled, style, ...rest }) {
+export function NumberField({ value, onChange, unit, placeholder, min = 1, max, width = 92, disabled, style, ...rest }: NumberFieldProps) {
   return (
     <label className="nc-num" style={{ width, opacity: disabled ? 0.45 : 1, ...style }}>
       <input type="number" value={value} onChange={onChange} placeholder={placeholder}
