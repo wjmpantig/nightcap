@@ -15,8 +15,31 @@ import (
 //go:embed all:frontend/dist
 var assets embed.FS
 
-//go:embed build/windows/icon.ico
-var trayIcon []byte
+// The tray shows whether nightcap is actually watching: the mark, or the mark
+// with the moon sunk to a sliver. Both are the brand pack's hand-drawn per-size
+// art packed by build/windows/make-tray-ico.py — never one image scaled, because
+// at 16-24px a 1px gap opens between the disc and the horizon.
+//
+//go:embed build/windows/tray-active.ico
+var trayActive []byte
+
+//go:embed build/windows/tray-inactive.ico
+var trayInactive []byte
+
+// trayIcon and trayTooltip are the whole mapping from state to tray appearance.
+func trayIcon(paused bool) []byte {
+	if paused {
+		return trayInactive
+	}
+	return trayActive
+}
+
+func trayTooltip(paused bool) string {
+	if paused {
+		return "nightcap — paused"
+	}
+	return "nightcap — watching"
+}
 
 func main() {
 	app := NewApp()
@@ -52,26 +75,33 @@ func main() {
 
 func setupTray(app *App) {
 	systray.Run(func() {
-		systray.SetIcon(trayIcon)
+		paused := app.GetConfig().Paused
+		systray.SetIcon(trayIcon(paused))
 		systray.SetTitle("nightcap")
-		systray.SetTooltip("nightcap — wake watcher")
+		systray.SetTooltip(trayTooltip(paused))
 
 		show := systray.AddMenuItem("Show nightcap", "")
-		pause := systray.AddMenuItemCheckbox("Pause watching", "", app.GetConfig().Paused)
+		pause := systray.AddMenuItemCheckbox("Pause watching", "", paused)
 		systray.AddSeparator()
 		quit := systray.AddMenuItem("Quit", "")
 
-		show.Click(func() { wruntime.WindowShow(app.ctx) })
-		pause.Click(func() {
-			paused := !pause.Checked()
-			if err := app.SetPaused(paused); err != nil {
-				log.Println("nightcap: pause:", err)
-				return
-			}
-			if paused {
+		// One hook, every source of truth: the tray follows the config rather
+		// than each caller updating it. A pause from the window's switch, from
+		// the settings view, or from this menu item all land here.
+		app.store.watch(func(c Config) {
+			systray.SetIcon(trayIcon(c.Paused))
+			systray.SetTooltip(trayTooltip(c.Paused))
+			if c.Paused {
 				pause.Check()
 			} else {
 				pause.Uncheck()
+			}
+		})
+
+		show.Click(func() { wruntime.WindowShow(app.ctx) })
+		pause.Click(func() {
+			if err := app.SetPaused(!pause.Checked()); err != nil {
+				log.Println("nightcap: pause:", err)
 			}
 		})
 		quit.Click(func() { wruntime.Quit(app.ctx) })

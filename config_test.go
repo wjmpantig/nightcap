@@ -108,3 +108,49 @@ func TestTimeoutFallsBackToGlobal(t *testing.T) {
 		t.Errorf("Timeout() with empty config = %v, want the built-in default", got)
 	}
 }
+
+// The tray follows the paused state through store.onChange, so every mutation
+// path has to fire it — that is the whole reason the hook lives in update()
+// rather than in App.SetPaused.
+func TestUpdateNotifiesWatcher(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "config.json")
+	s := &store{cfg: defaultConfig(), path: path}
+
+	var seen []Config
+	s.watch(func(c Config) { seen = append(seen, c) })
+
+	if err := s.update(func(c *Config) { c.Paused = true }); err != nil {
+		t.Fatalf("update: %v", err)
+	}
+	if err := s.update(func(c *Config) { c.Paused = false }); err != nil {
+		t.Fatalf("update: %v", err)
+	}
+
+	if len(seen) != 2 {
+		t.Fatalf("onChange fired %d times, want 2", len(seen))
+	}
+	if !seen[0].Paused || seen[1].Paused {
+		t.Errorf("paused sequence = %v, %v; want true, false", seen[0].Paused, seen[1].Paused)
+	}
+
+	// The hook must see the sanitised config, not the raw mutation: the tray
+	// should never render a state the rest of the app has already corrected.
+	if err := s.update(func(c *Config) { c.DefaultTimeoutMinutes = 0 }); err != nil {
+		t.Fatalf("update: %v", err)
+	}
+	if got := seen[len(seen)-1].DefaultTimeoutMinutes; got == 0 {
+		t.Errorf("onChange saw an unsanitised zero timeout")
+	}
+}
+
+// A store with no watcher registered is the normal case in tests and on
+// platforms with no tray; update must not panic on the nil hook.
+func TestUpdateWithoutWatcher(t *testing.T) {
+	s := &store{cfg: defaultConfig(), path: filepath.Join(t.TempDir(), "config.json")}
+	if err := s.update(func(c *Config) { c.Paused = true }); err != nil {
+		t.Fatalf("update: %v", err)
+	}
+	if !s.get().Paused {
+		t.Error("paused was not applied")
+	}
+}

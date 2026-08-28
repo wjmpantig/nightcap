@@ -113,6 +113,19 @@ type store struct {
 	path string
 	// warn is a non-fatal load problem worth showing the user (corrupt file).
 	warn string
+	// onChange is called with the new config after every mutation. update() is
+	// the only way the config ever changes, so a hook here sees a pause from the
+	// window, from the tray menu, and from anything added later — which is why
+	// the tray follows the state from one place instead of each caller
+	// remembering to tell it.
+	onChange func(Config)
+}
+
+// watch registers the single onChange hook. Called once at startup.
+func (s *store) watch(fn func(Config)) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.onChange = fn
 }
 
 func configPath() (string, error) {
@@ -200,7 +213,14 @@ func (s *store) update(fn func(*Config)) error {
 	s.cfg = sanitize(s.cfg)
 	cfg := s.cfg
 	path := s.path
+	onChange := s.onChange
 	s.mu.Unlock()
+
+	// Outside the lock: the hook reaches the tray, which must never be able to
+	// deadlock a config write by reading the config back.
+	if onChange != nil {
+		onChange(cfg)
+	}
 
 	if path == "" {
 		return errors.New("no config path")
