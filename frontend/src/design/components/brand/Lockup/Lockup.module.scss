@@ -1,0 +1,28 @@
+// --lockup-size is set from the size prop: the gap and the mark scale off the
+// wordmark's font-size, so one number drives the whole lockup.
+.lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--lockup-size) * 0.42);
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.word {
+  font-family: var(--font-display);
+  font-weight: var(--weight-medium);
+  font-size: var(--lockup-size);
+  line-height: 1;
+  letter-spacing: var(--tracking-display);
+  color: var(--text-primary);
+}
+
+.tagline {
+  font: var(--type-small);
+  color: var(--text-muted);
+  letter-spacing: var(--tracking-normal);
+}

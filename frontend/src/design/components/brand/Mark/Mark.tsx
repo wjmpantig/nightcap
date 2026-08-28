@@ -1,5 +1,7 @@
 import type { SVGAttributes } from "react"
 import { useId } from "react"
+import { cx } from "../../../cx"
+import styles from "./Mark.module.scss"
 
 /**
  * The nightcap mark — a moon setting behind a horizon bar. Geometry is fixed; never redraw it.
@@ -18,12 +20,13 @@ export interface MarkProps extends SVGAttributes<SVGSVGElement> {
 // Geometry copied verbatim from assets/svg/nightcap-mark.svg (mark 2b "Moonset"):
 // disc r=38 at cy=57 clipped at y=75, horizon bar 94x10 r=5 at y=70.
 // The inactive state sinks the moon to a sliver (assets/svg/state-inactive.svg).
+// These numbers are SVG geometry, not styling — they stay on the elements.
 export function Mark({
   size = 24,
   variant = "solid",
   state = "active",
   title,
-  style,
+  className,
   ...rest
 }: MarkProps) {
   const id = useId().replace(/:/g, "")
@@ -35,13 +38,13 @@ export function Mark({
   const barFill = variant === "duotone" ? "var(--amber)" : "currentColor"
   return (
     <svg
+      className={cx(styles.mark, className)}
       width={size}
       height={size}
       viewBox="0 0 100 100"
       fill="none"
       role={title ? "img" : "presentation"}
       aria-label={title}
-      style={style}
       {...rest}
     >
       {title && <title>{title}</title>}

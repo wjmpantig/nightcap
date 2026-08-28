@@ -1,0 +1,8 @@
+// The mark is sized through width/height attributes, not CSS — the geometry is
+// parametric and frozen (see design/README.md → Iconography). This is only here
+// to stop the SVG sitting on the text baseline and to keep it from being
+// squeezed by a flex parent.
+.mark {
+  display: block;
+  flex: 0 0 auto;
+}
