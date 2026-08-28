@@ -82,8 +82,41 @@ promise. Thrown from an effect that unmounts the React tree and leaves a blank w
 reload. Everything goes through `whenReady()` and `call()` in `src/bridge.ts`; never call a binding
 directly from a component.
 
+### Component structure
+
+Every component and view is a folder. No exceptions in `src/design/`:
+
+```
+[Component]/
+  [Component].tsx           the component, default-exported nothing — named export only
+  index.ts                  re-export barrel: export { X } from './X'; export type { XProps } from './X'
+  [Component].module.scss   its styles
+  [Component].test.tsx      only if there is logic worth pinning
+```
+
+Import a component by its folder (`from "../core/Button"`), never by the inner file.
+
+**No inline styles.** No `style={{...}}` and no injected `const CSS` string with a
+`document.createElement('style')` — several components were written that way and none are now. Styles
+go in the sibling `.module.scss` and come in as `styles.foo`. Two exceptions, both about values that
+only exist at runtime: a CSS custom property being *set* from a prop (`style={{ "--ring-frac": … }}`)
+and an SVG geometry attribute. Everything else is a class.
+
+`src/style.css` and `src/design/tokens/*.css` stay plain global CSS — they define the custom
+properties and the `[data-theme="light"]` swap, which have to be global to cascade. `App.tsx` is the
+one component that is not a folder: it is the entry `main.tsx` imports. It still has an
+`App.module.scss`.
+
 ## Conventions
 
+- **Micro commits.** One reviewable idea per commit, each one building and passing its tests on its
+  own. A mechanical rename and the behaviour change riding along with it are two commits. Say *why*
+  in the body, not what the diff already shows.
+- **Keep this file true.** Any structural change — a new directory convention, a moved boundary, a
+  renamed layer, a new build step, a dependency that changes how things are wired — updates CLAUDE.md
+  in the same commit that makes it. A convention documented here and not followed in the code is
+  worse than no convention. If it is unclear whether something belongs in this file, ask rather than
+  guessing.
 - Snooze durations cross the boundary as minutes: `0` un-snoozes, negative means indefinitely.
 - Exe names are matched as lowercased basenames everywhere. Run anything user-supplied through
   `normalizeExe()`.
