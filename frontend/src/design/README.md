@@ -223,7 +223,7 @@ the asset pack's own note.
 | `styles.css` | The single entry point consumers link. `@import` list only. |
 | `tokens/` | `fonts.css`, `colors.css`, `typography.css`, `spacing.css`, `radius-shadow.css`, `motion.css`, `theme-light.css`, `base.css` |
 | `components/` | The React primitives — see below |
-| `kit/` | The nightcap window — the **live** app views that `src/App.tsx` renders, + `kit.css` + its own README |
+| `kit/` | The nightcap window — the **live** app views that `src/App.tsx` renders, + its own README |
 
 Not imported from the design project: the 15 `guidelines/*.card.html` foundation specimens, the
 `.prompt.md` per-component usage docs, `templates/app-window/`, the `_ds_*` preview harness, and the
@@ -241,8 +241,11 @@ surfaces — every one of them appears in the desktop UI kit.
 **`components/forms/`** — `TextInput`, `NumberField`, `Select`, `Checkbox`, `Switch`
 **`components/data/`** — `ProcessName`, `ListRow`, `CountdownRing`, `IdleMeter`
 
-Each is a `.tsx` exporting its component and an exported `…Props` interface. Import them
-**without the extension** (`from './design/components/core/Button'`).
+Each is a folder — `[Component]/[Component].tsx`, `index.ts`, `[Component].module.scss` — exporting
+the component and its `…Props` interface. Import by the folder, through the `@/` alias:
+`from "@/design/components/core/Button"`. See CLAUDE.md for the structure and the no-inline-styles
+rule; the only `style` props left in the system are the seven that set a CSS custom property from a
+prop (`--field-width`, `--ring-tone`, and so on).
 
 **Intentional additions** (not in any source, added because the product needs them):
 - `Icon` — a wrapper for the substituted Lucide set, so the glyph source is swappable in one file.

@@ -23,22 +23,20 @@ Babel-in-the-browser preview: global `React`, `window.NightcapDesignSystem_*`, `
 
 ## Files
 
-- `AwakeView.tsx` — wake-lock holders + the un-closable driver/service list. Takes `Status.error`
-  and shows it *instead of* the empty state: "I couldn't check" is not "nothing is keeping you awake".
-- `WatchlistView.tsx` — per-app timeouts, snooze, remove, free-text add.
-- `HistoryView.tsx` — "Closed by nightcap".
-- `SettingsView.tsx` — rules, startup, pause, config path.
-- `WarningOverlay.tsx` — the pre-terminate countdown. Snooze only; there is no cancel binding.
-- `kit.css` — `.win` / `.nav` / `.scroll` window chrome.
+Each view is a folder — `[View]/[View].tsx`, `index.ts`, `[View].module.scss` — per the structure in
+CLAUDE.md. Import by the folder.
+
+- `AwakeView/` — wake-lock holders + the un-closable driver/service list. Takes `Status.error` and
+  shows it *instead of* the empty state: "I couldn't check" is not "nothing is keeping you awake".
+- `WatchlistView/` — per-app timeouts, snooze, remove, free-text add.
+- `HistoryView/` — "Closed by nightcap".
+- `SettingsView/` — rules, startup, pause, config path.
+- `WarningOverlay/` — the pre-terminate countdown. Snooze only; there is no cancel binding.
 
 Every visual primitive comes from `../components/`; nothing is re-implemented here. The views hold no
 state and call no bindings — they take data and callbacks from `App.tsx`, which is where `whenReady()`
-and `call()` live.
+and `call()` live, and which owns the window chrome (`src/App.module.scss`).
 
-### Orphaned since the port
-
-- `mock.ts` — fake `Status` / `Config` payloads. Its only consumer was the demo `AppShell`, deleted
-  when `App.tsx` took over. Kept as a reference for what the boundary looks like; delete it if you
-  don't want it.
-- `TrayMenu.tsx` — a popover mock-up of the Windows tray menu. The real menu is native, built with
-  `systray` in `main.go`, so nothing renders this.
+Two files were deleted once `App.tsx` became the real shell: `TrayMenu.tsx`, a popover mock-up of a
+tray menu that is actually native (`systray` in `main.go`), and `mock.ts`, whose only consumer was the
+demo `AppShell`. Both are in the history if a mock harness is ever wanted back.
