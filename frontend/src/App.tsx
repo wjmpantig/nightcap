@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react"
-import "./App.css"
+import { useCallback, useEffect, useState } from "react"
 import {
   AddToWatchlist,
   ClearHistory,
@@ -14,48 +13,21 @@ import {
 } from "../wailsjs/go/main/App"
 import { EventsOn } from "../wailsjs/runtime/runtime"
 import { call, whenReady } from "./bridge"
-
-type Request = {
-  category: string
-  kind: string
-  exe: string
-  path: string
-  reason: string
-  hosts: string[]
-}
-type WatchEntry = { exe: string; timeoutMinutes: number; snoozedUntil: string }
-type KillRecord = { exe: string; at: string; idleSecs: number; category: string; reason: string }
-type Config = {
-  defaultTimeoutMinutes: number
-  warningSeconds: number
-  watchlist: WatchEntry[]
-  autostart: boolean
-  paused: boolean
-  history: KillRecord[]
-}
-type Pending = { exe: string; deadline: string }
-type Status = {
-  requests: Request[]
-  idleSecs: number
-  fullscreen: boolean
-  pending: Pending[]
-  error: string
-  warning: string
-}
-
-const SNOOZE_OPTIONS = [
-  { label: "15 minutes", minutes: 15 },
-  { label: "1 hour", minutes: 60 },
-  { label: "4 hours", minutes: 240 },
-  { label: "8 hours", minutes: 480 },
-  { label: "Until I un-snooze", minutes: -1 },
-]
-
-// A shared runtime (msedgewebview2.exe and friends) is never watchable itself:
-// its name is shared by unrelated apps. The owning apps are the real targets.
-function targetsOf(r: Request): string[] {
-  return (r.hosts?.length ?? 0) > 0 ? r.hosts : [r.exe]
-}
+import { Lockup } from "./design/components/brand/Lockup"
+import { Mark } from "./design/components/brand/Mark"
+import { Badge } from "./design/components/core/Badge"
+import { Banner } from "./design/components/core/Banner"
+import { Icon } from "./design/components/core/Icon"
+import { Panel } from "./design/components/core/Panel"
+import { IdleMeter } from "./design/components/data/IdleMeter"
+import { Switch } from "./design/components/forms/Switch"
+import { AwakeView } from "./design/kit/AwakeView"
+import { HistoryView } from "./design/kit/HistoryView"
+import { SettingsView } from "./design/kit/SettingsView"
+import { WarningOverlay } from "./design/kit/WarningOverlay"
+import { WatchlistView } from "./design/kit/WatchlistView"
+import { snoozeRemaining } from "./format"
+import type { Config, Settings, Status } from "./types"
 
 const EMPTY: Status = {
   requests: [],
@@ -66,47 +38,43 @@ const EMPTY: Status = {
   warning: "",
 }
 
-function mmss(secs: number) {
-  const s = Math.max(0, Math.round(secs))
-  return `${Math.floor(s / 60)}m ${String(s % 60).padStart(2, "0")}s`
-}
+const NAV = [
+  { id: "awake", label: "Keeping awake", icon: "zap" },
+  { id: "watchlist", label: "Watchlist", icon: "eye" },
+  { id: "history", label: "Closed", icon: "power" },
+  { id: "settings", label: "Settings", icon: "settings" },
+] as const
 
-function whenKilled(iso: string) {
-  const d = new Date(iso)
-  if (Number.isNaN(d.getTime())) return ""
-  const sameDay = d.toDateString() === new Date().toDateString()
-  const time = d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-  return sameDay ? time : `${d.toLocaleDateString([], { month: "short", day: "numeric" })} ${time}`
-}
-
-function snoozeRemaining(entry: WatchEntry, nowMs: number): number {
-  const until = new Date(entry.snoozedUntil).getTime()
-  if (!until || Number.isNaN(until)) return 0
-  return Math.max(0, until - nowMs)
-}
-
-function humanRemaining(ms: number) {
-  const mins = Math.round(ms / 60000)
-  if (mins > 60 * 24 * 365) return "indefinitely"
-  if (mins >= 60) return `${Math.floor(mins / 60)}h ${mins % 60}m`
-  return `${Math.max(1, mins)}m`
-}
+type ViewId = (typeof NAV)[number]["id"]
 
 export default function App() {
   const [status, setStatus] = useState<Status>(EMPTY)
   const [cfg, setCfg] = useState<Config | null>(null)
-  // Local clock so countdowns tick smoothly between the backend's 5s polls.
+  const [view, setView] = useState<ViewId>("awake")
+  // Local clock so the kill countdown ticks smoothly between the backend's 5s polls.
   const [now, setNow] = useState(Date.now())
 
   const [ready, setReady] = useState(false)
   const [readyFailed, setReadyFailed] = useState(false)
 
-  const refresh = () =>
-    call(() => GetConfig())
-      .then((c) => setCfg(c as unknown as Config))
-      .catch((e) => console.error("GetConfig failed", e))
+  // Stable identities: the startup effect must run exactly once, or every render
+  // would subscribe another EventsOn("status") listener.
+  const refresh = useCallback(
+    () =>
+      call(() => GetConfig())
+        .then((c) => setCfg(c as unknown as Config))
+        .catch((e) => console.error("GetConfig failed", e)),
+    [],
+  )
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: mount-once setup; refresh is stable enough and re-running would rebuild the poll
+  const poll = useCallback(
+    () =>
+      call(() => GetStatus())
+        .then((s) => setStatus(s as unknown as Status))
+        .catch((e) => console.error("GetStatus failed", e)),
+    [],
+  )
+
   useEffect(() => {
     let live = true
     // Bindings are injected after this module runs, so wait for them rather
@@ -118,9 +86,7 @@ export default function App() {
         setReadyFailed(true)
         return
       }
-      call(() => GetStatus())
-        .then((s) => setStatus(s as unknown as Status))
-        .catch((e) => console.error("GetStatus failed", e))
+      poll()
       refresh()
       EventsOn("status", (s: Status) => {
         setStatus(s)
@@ -132,256 +98,186 @@ export default function App() {
       live = false
       clearInterval(t)
     }
-  }, [])
+  }, [poll, refresh])
 
-  const act = (p: () => Promise<any>) =>
+  const act = (p: () => Promise<unknown>) =>
     call(p)
       .then(refresh)
       .catch((e) => console.error(e))
 
   if (!ready) {
     return (
-      <div className="app">
-        <p className="empty">
-          {readyFailed
-            ? "Could not reach the nightcap backend: window.go was never injected. " +
-              "Open devtools (right-click > Inspect) and check the console."
-            : "Starting nightcap..."}
-        </p>
+      <div className="win">
+        <main className="scroll">
+          <Panel>
+            {readyFailed ? (
+              <Banner tone="error" title="Could not reach the nightcap backend">
+                window.go was never injected. Open devtools (right-click &gt; Inspect) and check the
+                console.
+              </Banner>
+            ) : (
+              <div style={{ font: "var(--type-body)", color: "var(--text-secondary)" }}>
+                Starting nightcap…
+              </div>
+            )}
+          </Panel>
+        </main>
       </div>
     )
   }
 
-  const watched = new Set((cfg?.watchlist ?? []).map((e) => e.exe))
-  const killable = (status.requests ?? []).filter((r) => r.exe !== "")
-  const pending = status.pending ?? []
+  const watchlist = cfg?.watchlist ?? []
+  const watched = new Set(watchlist.map((e) => e.exe))
+  const killable = status.requests.filter((r) => r.exe !== "")
+  const pending = status.pending
+  const armed = watchlist.filter((e) => snoozeRemaining(e, now) === 0).length
+  const timeout = cfg?.defaultTimeoutMinutes ?? 0
+
+  const counts: Record<ViewId, number> = {
+    awake: killable.length,
+    watchlist: watchlist.length,
+    history: cfg?.history.length ?? 0,
+    settings: 0,
+  }
+
+  // SaveSettings takes both numbers at once; autostart and paused have their own
+  // bindings. The view speaks in patches, so fan them back out here.
+  const applySettings = (patch: Partial<Settings>) => {
+    if (!cfg) return
+    const { autostart, paused, defaultTimeoutMinutes, warningSeconds } = patch
+    if (autostart !== undefined) act(() => SetAutostart(autostart))
+    else if (paused !== undefined) act(() => SetPaused(paused))
+    else
+      act(() =>
+        SaveSettings(
+          defaultTimeoutMinutes ?? cfg.defaultTimeoutMinutes,
+          warningSeconds ?? cfg.warningSeconds,
+        ),
+      )
+  }
 
   return (
-    <div className="app">
-      {pending.length > 0 && (
-        <div className="overlay">
-          <div className="card">
-            <h2>Closing in {mmss((new Date(pending[0].deadline).getTime() - now) / 1000)}</h2>
-            <p>
-              <b>{pending.map((p) => p.exe).join(", ")}</b> {pending.length > 1 ? "are" : "is"}{" "}
-              keeping this PC awake, and there has been no input for {mmss(status.idleSecs)}.
-            </p>
-            <div className="snooze-row">
-              <span>Snooze instead:</span>
-              {SNOOZE_OPTIONS.map((o) => (
-                <button
-                  type="button"
-                  key={o.minutes}
-                  onClick={() =>
-                    act(() => Promise.all(pending.map((p) => Snooze(p.exe, o.minutes))))
-                  }
-                >
-                  {o.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      <header>
-        <h1>nightcap</h1>
-        <div className="state">
-          {cfg?.paused ? (
-            <span className="pill warn">paused</span>
-          ) : (
-            <span className="pill">idle {mmss(status.idleSecs)}</span>
-          )}
-          {status.fullscreen && <span className="pill">fullscreen</span>}
-        </div>
+    <div className="win">
+      <header
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "var(--space-5)",
+          height: "var(--titlebar-height)",
+          padding: "0 var(--space-6)",
+          background: "var(--surface-tile)",
+          borderBottom: "1px solid var(--line)",
+          flex: "0 0 auto",
+        }}
+      >
+        <Lockup size={15} />
+        {status.fullscreen && (
+          <Badge tone="snoozed" icon="maximize" style={{ marginLeft: "auto" }}>
+            fullscreen
+          </Badge>
+        )}
       </header>
 
-      {status.error && <div className="banner error">{status.error}</div>}
-      {status.warning && <div className="banner">{status.warning}</div>}
-
-      <section>
-        <h2>Keeping this PC awake</h2>
-        {killable.length === 0 && !status.error && (
-          <p className="empty">Nothing is holding a wake lock right now.</p>
-        )}
-        <table>
-          <tbody>
-            {killable.map((r, i) => {
-              const targets = targetsOf(r)
-              return (
-                <tr key={`${r.exe}-${r.category}-${i}`}>
-                  <td className="exe">
-                    {r.exe}
-                    {r.hosts?.length > 0 && (
-                      <div className="host">
-                        {r.hosts.length > 1 ? "shared runtime, owned by" : "owned by"}{" "}
-                        {r.hosts.join(", ")}
-                      </div>
-                    )}
-                  </td>
-                  <td className="cat">{r.category}</td>
-                  <td className="reason">{r.reason}</td>
-                  <td className="right">
-                    {targets.length === 0 ? (
-                      <span className="cat">owner unknown</span>
-                    ) : (
-                      targets.map((t) =>
-                        watched.has(t) ? (
-                          <span key={t} className="pill">
-                            watching {t}
-                          </span>
-                        ) : (
-                          <button
-                            type="button"
-                            key={t}
-                            onClick={() => act(() => AddToWatchlist(t))}
-                          >
-                            Watch {targets.length > 1 || t !== r.exe ? t : ""}
-                          </button>
-                        ),
-                      )
-                    )}
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-        {status.requests.some((r) => r.exe === "") && (
-          <p className="note">
-            Some wake locks are held by drivers or services. nightcap cannot close those.
-          </p>
-        )}
-      </section>
-
-      <section>
-        <h2>Watchlist</h2>
-        {cfg?.watchlist.length === 0 && (
-          <p className="empty">Nothing watched yet. Add an app from the list above.</p>
-        )}
-        <table>
-          <tbody>
-            {cfg?.watchlist.map((e) => {
-              const left = snoozeRemaining(e, now)
-              return (
-                <tr key={e.exe} className={left > 0 ? "snoozed" : ""}>
-                  <td className="exe">{e.exe}</td>
-                  <td>
-                    <input
-                      type="number"
-                      min={1}
-                      placeholder={String(cfg.defaultTimeoutMinutes)}
-                      value={e.timeoutMinutes || ""}
-                      onChange={(ev) => act(() => SetTimeout(e.exe, Number(ev.target.value) || 0))}
-                    />
-                    <span className="unit">min</span>
-                  </td>
-                  <td className="right">
-                    {left > 0 ? (
-                      <>
-                        <span className="pill">snoozed {humanRemaining(left)}</span>
-                        <button type="button" onClick={() => act(() => Snooze(e.exe, 0))}>
-                          Un-snooze
-                        </button>
-                      </>
-                    ) : (
-                      <select
-                        value=""
-                        onChange={(ev) => {
-                          if (ev.target.value !== "")
-                            act(() => Snooze(e.exe, Number(ev.target.value)))
-                        }}
-                      >
-                        <option value="">Snooze...</option>
-                        {SNOOZE_OPTIONS.map((o) => (
-                          <option key={o.minutes} value={o.minutes}>
-                            {o.label}
-                          </option>
-                        ))}
-                      </select>
-                    )}
-                    <button
-                      type="button"
-                      className="danger"
-                      onClick={() => act(() => RemoveFromWatchlist(e.exe))}
-                    >
-                      Remove
-                    </button>
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-      </section>
-
-      {cfg && cfg.history.length > 0 && (
-        <section>
-          <div className="section-head">
-            <h2>Closed by nightcap</h2>
-            <button type="button" onClick={() => act(() => ClearHistory())}>
-              Clear
+      <div style={{ flex: 1, display: "flex", minHeight: 0 }}>
+        <nav
+          style={{
+            width: "var(--sidebar-width)",
+            flex: "0 0 auto",
+            padding: "var(--space-6) var(--space-5)",
+            background: "var(--surface-sunken)",
+            borderRight: "1px solid var(--line)",
+            display: "flex",
+            flexDirection: "column",
+            gap: "var(--space-2)",
+          }}
+        >
+          {NAV.map((n) => (
+            <button
+              type="button"
+              key={n.id}
+              className="nav"
+              aria-current={view === n.id ? "page" : undefined}
+              onClick={() => setView(n.id)}
+            >
+              <Icon name={n.icon} size={14} />
+              {n.label}
+              {counts[n.id] > 0 && <span className="nav__count">{counts[n.id]}</span>}
             </button>
-          </div>
-          <table>
-            <tbody>
-              {cfg.history.map((h, i) => (
-                <tr key={`${h.exe}-${h.at}-${i}`}>
-                  <td className="exe">{h.exe}</td>
-                  <td className="cat">{whenKilled(h.at)}</td>
-                  <td className="reason">{h.reason || h.category}</td>
-                  <td className="right cat">after {mmss(h.idleSecs)} idle</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
-      )}
+          ))}
 
-      {cfg && (
-        <section className="settings">
-          <h2>Settings</h2>
-          <label>
-            Close watched apps after
-            <input
-              type="number"
-              min={1}
-              value={cfg.defaultTimeoutMinutes}
-              onChange={(e) =>
-                act(() => SaveSettings(Number(e.target.value) || 1, cfg.warningSeconds))
-              }
-            />
-            minutes idle
-          </label>
-          <label>
-            Warn for
-            <input
-              type="number"
-              min={0}
-              value={cfg.warningSeconds}
-              onChange={(e) =>
-                act(() => SaveSettings(cfg.defaultTimeoutMinutes, Number(e.target.value) || 0))
-              }
-            />
-            seconds first
-          </label>
-          <label className="check">
-            <input
-              type="checkbox"
-              checked={cfg.autostart}
-              onChange={(e) => act(() => SetAutostart(e.target.checked))}
-            />
-            Start nightcap at login
-          </label>
-          <label className="check">
-            <input
-              type="checkbox"
-              checked={cfg.paused}
+          <div
+            style={{
+              marginTop: "auto",
+              display: "flex",
+              flexDirection: "column",
+              gap: "var(--space-5)",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "var(--space-4)" }}>
+              <Mark
+                size={20}
+                state={cfg?.paused ? "inactive" : "active"}
+                style={{ color: cfg?.paused ? "var(--state-snoozed)" : "var(--moonlight)" }}
+              />
+              {cfg?.paused ? (
+                <Badge tone="snoozed">paused</Badge>
+              ) : (
+                <Badge tone="watched" dot>
+                  {armed} armed
+                </Badge>
+              )}
+            </div>
+            <IdleMeter idleSecs={status.idleSecs} timeoutMinutes={timeout} />
+            <Switch
+              checked={cfg?.paused ?? false}
+              tone="amber"
+              label="Pause"
               onChange={(e) => act(() => SetPaused(e.target.checked))}
             />
-            Pause watching
-          </label>
-        </section>
+          </div>
+        </nav>
+
+        <main className="scroll">
+          {status.warning && (
+            <Banner tone="warning" style={{ marginBottom: "var(--gap-section)" }}>
+              {status.warning}
+            </Banner>
+          )}
+
+          {view === "awake" && (
+            <AwakeView
+              requests={status.requests}
+              watched={watched}
+              error={status.error}
+              onWatch={(exe) => act(() => AddToWatchlist(exe))}
+              onRefresh={poll}
+            />
+          )}
+          {view === "watchlist" && (
+            <WatchlistView
+              entries={watchlist}
+              defaultTimeout={timeout}
+              onSetTimeout={(exe, m) => act(() => SetTimeout(exe, m))}
+              onSnooze={(exe, mins) => act(() => Snooze(exe, mins))}
+              onRemove={(exe) => act(() => RemoveFromWatchlist(exe))}
+              onAdd={(exe) => act(() => AddToWatchlist(exe))}
+            />
+          )}
+          {view === "history" && (
+            <HistoryView history={cfg?.history ?? []} onClear={() => act(() => ClearHistory())} />
+          )}
+          {view === "settings" && cfg && <SettingsView cfg={cfg} onChange={applySettings} />}
+        </main>
+      </div>
+
+      {pending.length > 0 && (
+        <WarningOverlay
+          pending={pending.map((p) => p.exe)}
+          remaining={(new Date(pending[0].deadline).getTime() - now) / 1000}
+          total={cfg?.warningSeconds ?? 0}
+          idleSecs={status.idleSecs}
+          onSnooze={(mins) => act(() => Promise.all(pending.map((p) => Snooze(p.exe, mins))))}
+        />
       )}
     </div>
   )

@@ -1,27 +1,12 @@
-html {
-  background-color: rgba(27, 38, 54, 1);
-  text-align: center;
-  color: white;
-}
+/* The whole design system, then the window chrome it is drawn on. */
+@import "./design/styles.css";
+@import "./design/kit/kit.css";
 
-body {
-  margin: 0;
-  color: white;
-  font-family:
-    "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
-    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-}
-
-@font-face {
-  font-family: "Nunito";
-  font-style: normal;
-  font-weight: 400;
-  src:
-    local(""),
-    url("assets/fonts/nunito-v16-latin-regular.woff2") format("woff2");
-}
-
-#app {
-  height: 100vh;
-  text-align: center;
+/* .win is height:100%, so the chain from the document down has to be too.
+   (The old rule targeted #app; index.html mounts into #root, so it never
+   applied — the window has never actually been full-height.) */
+html,
+body,
+#root {
+  height: 100%;
 }
