@@ -1,0 +1,35 @@
+@use "../styles/units" as *;
+
+// 4px grid with a 6px half-step for control padding. Authored in px, emitted in
+// rem — see styles/_units.scss.
+:root {
+  --space-0: 0;
+  --space-1: #{rem(2px)};
+  --space-2: #{rem(4px)};
+  --space-3: #{rem(6px)};
+  --space-4: #{rem(8px)};
+  --space-5: #{rem(12px)};
+  --space-6: #{rem(16px)};
+  --space-7: #{rem(20px)};
+  --space-8: #{rem(24px)};
+  --space-9: #{rem(32px)};
+  --space-10: #{rem(40px)};
+  --space-11: #{rem(48px)};
+  --space-12: #{rem(64px)};
+
+  --gap-inline: var(--space-3); /* between a label and its value */
+  --gap-control: var(--space-4); /* between sibling buttons */
+  --gap-row: var(--space-5); /* between rows in a list */
+  --gap-section: var(--space-6); /* between panels */
+  --pad-panel: var(--space-6);
+  --pad-row: var(--space-5);
+  --pad-control-x: var(--space-5);
+  --pad-control-y: var(--space-3);
+
+  --row-height: #{rem(44px)}; /* list rows stay 44px — clickable, still dense */
+  --control-height: #{rem(30px)};
+  --control-height-lg: #{rem(36px)};
+  --app-width: #{rem(940px)}; /* the desktop window's content column */
+  --sidebar-width: #{rem(216px)};
+  --titlebar-height: #{rem(38px)};
+}

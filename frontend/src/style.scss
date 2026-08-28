@@ -1,5 +1,5 @@
 /* The design system's tokens and element defaults. */
-@import "./design/styles.css";
+@use "./design/styles" as *;
 
 /* .win is height:100%, so the chain from the document down has to be too.
    (The old rule targeted #app; index.html mounts into #root, so it never

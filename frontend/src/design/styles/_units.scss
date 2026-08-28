@@ -1,0 +1,37 @@
+@use "sass:math";
+
+// Sizes are authored in px throughout this system — the design rulebook talks in
+// px (13px body, 44px rows, 216px sidebar) and so does the asset pack. These
+// functions keep that vocabulary in the source while the browser gets relative
+// units, so the UI scales with the user's font size instead of being pinned to
+// 16px forever.
+//
+//   padding: rem(12px)     ->  padding: 0.75rem
+//   margin: em(4px, 13px)  ->  margin: 0.30769em
+//
+// $root-size must match the browser's root font-size; nothing here overrides
+// html { font-size }, so 16px is correct.
+$root-size: 16px !default;
+
+@function strip-unit($value) {
+  @if math.is-unitless($value) {
+    @return $value;
+  }
+  @return math.div($value, ($value * 0 + 1));
+}
+
+/// px -> rem, relative to the document root.
+@function rem($value) {
+  @if $value == 0 {
+    @return 0;
+  }
+  @return math.div(strip-unit($value), strip-unit($root-size)) * 1rem;
+}
+
+/// px -> em, relative to the element's own font-size ($context).
+@function em($value, $context: $root-size) {
+  @if $value == 0 {
+    @return 0;
+  }
+  @return math.div(strip-unit($value), strip-unit($context)) * 1em;
+}

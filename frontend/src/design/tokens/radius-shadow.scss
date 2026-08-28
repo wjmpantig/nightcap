@@ -1,16 +1,22 @@
+@use "../styles/units" as *;
+
 :root {
   /* Corners are tight — this is a system tool, not a consumer app.
      5px on controls, 10px on panels, 22% squircle only on the app icon. */
-  --radius-xs: 3px;
-  --radius-sm: 5px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
+  --radius-xs: #{rem(3px)};
+  --radius-sm: #{rem(5px)};
+  --radius-md: #{rem(10px)};
+  --radius-lg: #{rem(14px)};
   --radius-pill: 999px;
   --radius-icon-tile: 22%;
 
+  // Stays px on purpose. A hairline is one device pixel; in rem it lands on a
+  // fraction at most font sizes and the browser blurs it.
   --border-hairline: 1px;
 
-  /* Depth on a near-black UI comes from a lighter top edge, not a drop shadow. */
+  // Depth on a near-black UI comes from a lighter top edge, not a drop shadow.
+  // Shadow offsets and blurs stay px: they are optical effects, not layout, and
+  // should not grow when someone bumps their font size.
   --shadow-edge-top: inset 0 1px 0 var(--paper-a06);
   --shadow-panel: 0 1px 2px rgba(0, 0, 0, 0.4);
   --shadow-raised: 0 6px 18px -10px rgba(0, 0, 0, 0.8), inset 0 1px 0 var(--paper-a06);

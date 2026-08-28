@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client"
-import "./style.css"
+import "./style.scss"
 import App from "./App"
 
 // A blank window is the worst failure mode to debug: it looks identical whether

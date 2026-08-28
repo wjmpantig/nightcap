@@ -1,0 +1,11 @@
+// The design system's single entry point. Order matters: colors before
+// theme-light (which overrides its custom properties), tokens before base
+// (which consumes them).
+@use "tokens/fonts";
+@use "tokens/colors";
+@use "tokens/typography";
+@use "tokens/spacing";
+@use "tokens/radius-shadow";
+@use "tokens/motion";
+@use "tokens/theme-light";
+@use "tokens/base";
