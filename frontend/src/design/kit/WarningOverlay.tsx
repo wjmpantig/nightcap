@@ -11,16 +11,17 @@ interface WarningOverlayProps {
   total: number
   idleSecs: number
   onSnooze: (minutes: number) => void
-  onCancel: () => void
 }
 
+// There is no cancel. The backend arms the countdown and the only way out is to
+// snooze — a "Cancel" that silently re-armed on the next tick would be a lie
+// about a dialog that is thirty seconds from terminating your process.
 export function WarningOverlay({
   pending,
   remaining,
   total,
   idleSecs,
   onSnooze,
-  onCancel,
 }: WarningOverlayProps) {
   return (
     <div
@@ -88,14 +89,11 @@ export function WarningOverlay({
           >
             Snooze instead
           </span>
-          {SNOOZE_OPTIONS.slice(0, 4).map((o) => (
+          {SNOOZE_OPTIONS.map((o) => (
             <Button key={o.value} size="sm" onClick={() => onSnooze(o.value)}>
               {o.label}
             </Button>
           ))}
-          <Button size="sm" variant="ghost" style={{ marginLeft: "auto" }} onClick={onCancel}>
-            Cancel
-          </Button>
         </div>
       </Panel>
     </div>

@@ -1,8 +1,5 @@
 import type { ReactNode } from "react"
 import type { Settings } from "../../types"
-import { Badge } from "../components/core/Badge"
-import { Banner } from "../components/core/Banner"
-import { Button } from "../components/core/Button"
 import { Panel } from "../components/core/Panel"
 import { SectionHeader } from "../components/core/SectionHeader"
 import { Checkbox } from "../components/forms/Checkbox"
@@ -57,18 +54,6 @@ export function SettingsView({ cfg, onChange }: SettingsViewProps) {
       className="fade-in"
       style={{ display: "flex", flexDirection: "column", gap: "var(--gap-section)" }}
     >
-      <Banner
-        tone="info"
-        title="Running elevated"
-        action={
-          <Badge tone="watched" icon="shield-check">
-            admin
-          </Badge>
-        }
-      >
-        powercfg only reports the full picture with administrator rights.
-      </Banner>
-
       <Panel pad={false}>
         <SectionHeader title="Rules" />
         <div style={{ padding: "0 var(--pad-panel) var(--space-4)" }}>
@@ -134,9 +119,6 @@ export function SettingsView({ cfg, onChange }: SettingsViewProps) {
         }}
       >
         <span style={{ fontFamily: "var(--font-mono)" }}>%APPDATA%\nightcap\config.json</span>
-        <Button size="sm" variant="ghost" icon="folder-open">
-          Show config
-        </Button>
       </div>
     </div>
   )

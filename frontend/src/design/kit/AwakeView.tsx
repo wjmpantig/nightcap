@@ -1,5 +1,7 @@
+import { targetsOf } from "../../format"
 import type { Request } from "../../types"
 import { Badge } from "../components/core/Badge"
+import { Banner } from "../components/core/Banner"
 import { Button } from "../components/core/Button"
 import { EmptyState } from "../components/core/EmptyState"
 import { Panel } from "../components/core/Panel"
@@ -11,9 +13,16 @@ interface AwakeViewProps {
   requests: Request[]
   watched: Set<string>
   onWatch: (exe: string) => void
+  onRefresh: () => void
+  /**
+   * Status.error — powercfg could not be read at all. "I couldn't check" and
+   * "nothing is keeping you awake" are different states, so this replaces the
+   * empty state rather than sitting above it.
+   */
+  error?: string
 }
 
-export function AwakeView({ requests, watched, onWatch }: AwakeViewProps) {
+export function AwakeView({ requests, watched, onWatch, onRefresh, error }: AwakeViewProps) {
   const killable = requests.filter((r) => r.exe !== "")
   const drivers = requests.filter((r) => r.exe === "")
   return (
@@ -25,20 +34,28 @@ export function AwakeView({ requests, watched, onWatch }: AwakeViewProps) {
         <SectionHeader
           title="Keeping this PC awake"
           count={killable.length}
-          hint="powercfg polled 2s ago"
+          hint="powercfg is re-polled every 5s"
           actions={
-            <Button size="sm" variant="ghost" icon="refresh-cw">
+            <Button size="sm" variant="ghost" icon="refresh-cw" onClick={onRefresh}>
               Refresh
             </Button>
           }
         />
-        {killable.length === 0 && (
-          <EmptyState title="Nothing is holding a wake lock right now.">
-            This PC will sleep on its own schedule.
-          </EmptyState>
+        {error ? (
+          <div style={{ padding: "var(--pad-panel)" }}>
+            <Banner tone="error" title="nightcap could not check what is keeping this PC awake">
+              {error}
+            </Banner>
+          </div>
+        ) : (
+          killable.length === 0 && (
+            <EmptyState title="Nothing is holding a wake lock right now.">
+              This PC will sleep on its own schedule.
+            </EmptyState>
+          )
         )}
         {killable.map((r) => {
-          const targets = r.hosts.length ? r.hosts : [r.exe]
+          const targets = targetsOf(r)
           const allWatched = targets.every((t) => watched.has(t))
           return (
             <ListRow

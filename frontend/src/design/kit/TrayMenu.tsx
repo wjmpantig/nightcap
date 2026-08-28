@@ -1,8 +1,8 @@
 import type { ReactNode } from "react"
+import { mmss } from "../../format"
 import { Mark } from "../components/brand/Mark"
 import { Badge } from "../components/core/Badge"
 import { Icon } from "../components/core/Icon"
-import { mmss } from "../../format"
 
 interface TrayMenuProps {
   paused: boolean
