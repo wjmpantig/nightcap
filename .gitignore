@@ -4,3 +4,6 @@ frontend/dist
 
 # stray build output
 /nightcap.exe
+
+# wails build writes this to track frontend installs
+frontend/package.json.md5
