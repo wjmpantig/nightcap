@@ -179,7 +179,7 @@ script once, reads the icon geometry out of `window.lucide`, and renders a **rea
 stroked in `currentColor`** — so an icon inside a danger button turns ember for free. Consequences:
 icons are never hand-drawn, never PNG, never a CSS-mask image, and never coloured directly. 14px in
 dense rows, 16px default, 20px in headers. **The glyph source lives in exactly one file — swap `SRC`
-in `Icon.jsx` and the whole system changes icon set.** Like the fonts, this is a CDN dependency:
+in `Icon.tsx` and the whole system changes icon set.** Like the fonts, this is a CDN dependency:
 nightcap is an offline desktop app, so vendoring Lucide locally and pointing `Icon` at it is a real
 outstanding task.
 
@@ -215,7 +215,7 @@ the asset pack's own note.
 | `styles.css` | The single entry point consumers link. `@import` list only. |
 | `tokens/` | `fonts.css`, `colors.css`, `typography.css`, `spacing.css`, `radius-shadow.css`, `motion.css`, `theme-light.css`, `base.css` |
 | `components/` | The React primitives — see below |
-| `kit/` | The nightcap window, mock-data only: 7 views + `mock.js` + `kit.css` + its own README |
+| `kit/` | The nightcap window, mock-data only: 7 views + `mock.ts` + `kit.css` + its own README |
 
 Not imported from the design project: the 15 `guidelines/*.card.html` foundation specimens, the
 `.prompt.md` per-component usage docs, `templates/app-window/`, the `_ds_*` preview harness, and the
@@ -233,9 +233,8 @@ surfaces — every one of them appears in the desktop UI kit.
 **`components/forms/`** — `TextInput`, `NumberField`, `Select`, `Checkbox`, `Switch`
 **`components/data/`** — `ProcessName`, `ListRow`, `CountdownRing`, `IdleMeter`
 
-Each has a sibling `.d.ts` props contract. `allowJs` is `false` in `tsconfig.json`, so import these
-**without the extension** from TypeScript (`from './design/components/core/Button'`) — that resolves
-the `.d.ts` for types while Vite resolves the `.jsx` for the build.
+Each is a `.tsx` exporting its component and an exported `…Props` interface. Import them
+**without the extension** (`from './design/components/core/Button'`).
 
 **Intentional additions** (not in any source, added because the product needs them):
 - `Icon` — a wrapper for the substituted Lucide set, so the glyph source is swappable in one file.

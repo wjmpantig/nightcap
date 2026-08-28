@@ -7,7 +7,7 @@ the real app; the layout is the proposal.
 Imported from the claude.ai/design project `nightcap Design System` (`ui_kits/desktop/`). The source
 files were written for a Babel-in-the-browser preview — global `React`, `window.NightcapDesignSystem_*`,
 `window.AppShell`. They are ES modules here: named imports from `../components/**`, mock payloads from
-`./mock.js`, shell chrome in `./kit.css`. The preview harness (`index.html`, `ds-base.js`,
+`./mock.ts`, shell chrome in `./kit.css`. The preview harness (`index.html`, `ds-base.js`,
 `support.js`) was not imported; Vite replaces it.
 
 ## What changed from the shipped UI
@@ -23,14 +23,14 @@ files were written for a Babel-in-the-browser preview — global `React`, `windo
 
 ## Files
 
-- `AppShell.jsx` — window chrome, sidebar nav, status foot, state. Also the demo's "Simulate kill".
-- `AwakeView.jsx` — wake-lock holders + the un-closable driver/service list.
-- `WatchlistView.jsx` — per-app timeouts, snooze, remove, free-text add.
-- `HistoryView.jsx` — "Closed by nightcap".
-- `SettingsView.jsx` — rules, startup, pause, config path.
-- `WarningOverlay.jsx` — the pre-terminate countdown.
-- `TrayMenu.jsx` — the tray popover (Windows tray menu equivalent).
-- `mock.js` — fake payloads shaped like the Go `Status` / `Config` structs.
+- `AppShell.tsx` — window chrome, sidebar nav, status foot, state. Also the demo's "Simulate kill".
+- `AwakeView.tsx` — wake-lock holders + the un-closable driver/service list.
+- `WatchlistView.tsx` — per-app timeouts, snooze, remove, free-text add.
+- `HistoryView.tsx` — "Closed by nightcap".
+- `SettingsView.tsx` — rules, startup, pause, config path.
+- `WarningOverlay.tsx` — the pre-terminate countdown.
+- `TrayMenu.tsx` — the tray popover (Windows tray menu equivalent).
+- `mock.ts` — fake payloads shaped like the Go `Status` / `Config` structs.
 - `kit.css` — `.win` / `.nav` / `.scroll` window chrome.
 
 Every visual primitive comes from `../components/`; nothing is re-implemented here.
