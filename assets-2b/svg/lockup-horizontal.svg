@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="150" height="36" viewBox="0 0 150 36" fill="none">
+<g transform="translate(0 6)">
+<clipPath id="lk"><rect x="0" y="0" width="24" height="16"></rect></clipPath>
+<circle cx="12" cy="14" r="9" fill="currentColor" clip-path="url(#lk)"></circle>
+<rect x="0.5" y="17" width="23" height="2" rx="1" fill="currentColor"></rect>
+</g>
+<text x="34" y="25" font-family="Space Grotesk, Helvetica, Arial, sans-serif" font-size="24" font-weight="500" letter-spacing="-0.85" fill="currentColor">nightcap</text>
+</svg>

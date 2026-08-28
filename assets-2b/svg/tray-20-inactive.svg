@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+<clipPath id="c20i"><rect x="0" y="0" width="20" height="10"></rect></clipPath>
+<circle cx="10" cy="15.5" r="7.5" fill="currentColor" clip-path="url(#c20i)"></circle>
+<rect x="0.5" y="11" width="19" height="2" rx="1" fill="currentColor"></rect>
+</svg>

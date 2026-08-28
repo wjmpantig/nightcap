@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100" fill="none">
+<clipPath id="c100i"><rect x="0" y="0" width="100" height="58"></rect></clipPath>
+<circle cx="50" cy="76" r="38" fill="currentColor" clip-path="url(#c100i)"></circle>
+<rect x="3" y="53" width="94" height="10" rx="5" fill="currentColor"></rect>
+</svg>
