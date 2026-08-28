@@ -1,0 +1,17 @@
+.view {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-section);
+}
+
+// The error sits inside the panel where the list would be, so it reads as the
+// answer to "what is keeping this PC awake" rather than a notice above it.
+.errorSlot {
+  padding: var(--pad-panel);
+}
+
+// Drivers and services have no process to close — shown for the record only.
+.driverReason {
+  font: var(--type-body);
+  color: var(--text-secondary);
+}

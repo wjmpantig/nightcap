@@ -12,6 +12,7 @@ import {
   Snooze,
 } from "../wailsjs/go/main/App"
 import { EventsOn } from "../wailsjs/runtime/runtime"
+import styles from "./App.module.scss"
 import { call, whenReady } from "./bridge"
 import { Lockup } from "./design/components/brand/Lockup"
 import { Mark } from "./design/components/brand/Mark"
@@ -107,8 +108,8 @@ export default function App() {
 
   if (!ready) {
     return (
-      <div className="win">
-        <main className="scroll">
+      <div className={styles.win}>
+        <main className={styles.scroll}>
           <Panel>
             {readyFailed ? (
               <Banner tone="error" title="Could not reach the nightcap backend">
@@ -116,9 +117,7 @@ export default function App() {
                 console.
               </Banner>
             ) : (
-              <div style={{ font: "var(--type-body)", color: "var(--text-secondary)" }}>
-                Starting nightcap…
-              </div>
+              <div className={styles.starting}>Starting nightcap…</div>
             )}
           </Panel>
         </main>
@@ -157,67 +156,38 @@ export default function App() {
   }
 
   return (
-    <div className="win">
-      <header
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "var(--space-5)",
-          height: "var(--titlebar-height)",
-          padding: "0 var(--space-6)",
-          background: "var(--surface-tile)",
-          borderBottom: "1px solid var(--line)",
-          flex: "0 0 auto",
-        }}
-      >
+    <div className={styles.win}>
+      <header className={styles.titlebar}>
         <Lockup size={15} />
         {status.fullscreen && (
-          <Badge tone="snoozed" icon="maximize" style={{ marginLeft: "auto" }}>
+          <Badge tone="snoozed" icon="maximize" className={styles.fullscreenFlag}>
             fullscreen
           </Badge>
         )}
       </header>
 
-      <div style={{ flex: 1, display: "flex", minHeight: 0 }}>
-        <nav
-          style={{
-            width: "var(--sidebar-width)",
-            flex: "0 0 auto",
-            padding: "var(--space-6) var(--space-5)",
-            background: "var(--surface-sunken)",
-            borderRight: "1px solid var(--line)",
-            display: "flex",
-            flexDirection: "column",
-            gap: "var(--space-2)",
-          }}
-        >
+      <div className={styles.split}>
+        <nav className={styles.sidebar}>
           {NAV.map((n) => (
             <button
               type="button"
               key={n.id}
-              className="nav"
+              className={styles.navItem}
               aria-current={view === n.id ? "page" : undefined}
               onClick={() => setView(n.id)}
             >
               <Icon name={n.icon} size={14} />
               {n.label}
-              {counts[n.id] > 0 && <span className="nav__count">{counts[n.id]}</span>}
+              {counts[n.id] > 0 && <span className={styles.navCount}>{counts[n.id]}</span>}
             </button>
           ))}
 
-          <div
-            style={{
-              marginTop: "auto",
-              display: "flex",
-              flexDirection: "column",
-              gap: "var(--space-5)",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: "var(--space-4)" }}>
+          <div className={styles.status}>
+            <div className={styles.statusHead}>
               <Mark
                 size={20}
                 state={cfg?.paused ? "inactive" : "active"}
-                style={{ color: cfg?.paused ? "var(--state-snoozed)" : "var(--moonlight)" }}
+                className={cfg?.paused ? styles.markPaused : styles.mark}
               />
               {cfg?.paused ? (
                 <Badge tone="snoozed">paused</Badge>
@@ -237,9 +207,9 @@ export default function App() {
           </div>
         </nav>
 
-        <main className="scroll">
+        <main className={styles.scroll}>
           {status.warning && (
-            <Banner tone="warning" style={{ marginBottom: "var(--gap-section)" }}>
+            <Banner tone="warning" className={styles.warning}>
               {status.warning}
             </Banner>
           )}

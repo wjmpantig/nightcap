@@ -1,0 +1,130 @@
+// The window shell. nightcap runs in an ordinary resizable Wails window
+// (900x660, MinWidth 680) with native chrome, so .win fills it flat — the design
+// drew a frameless floating window with a border, a 14px radius and the overlay
+// shadow, which would render as a rounded box inset inside the real frame.
+// --radius-lg is still the token for the window corner if it ever goes frameless.
+.win {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--surface-app);
+}
+
+.titlebar {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: var(--space-5);
+  height: var(--titlebar-height);
+  padding: 0 var(--space-6);
+  background: var(--surface-tile);
+  border-bottom: 1px solid var(--line);
+}
+
+.fullscreenFlag {
+  margin-left: auto;
+}
+
+.split {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+  gap: var(--space-2);
+  width: var(--sidebar-width);
+  padding: var(--space-6) var(--space-5);
+  background: var(--surface-sunken);
+  border-right: 1px solid var(--line);
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  height: 32px;
+  padding: 0 var(--space-4);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  font: var(--type-body-strong);
+  text-align: left;
+  cursor: pointer;
+  transition: var(--transition-control);
+
+  &:hover {
+    background: var(--surface-hover);
+    color: var(--text-primary);
+  }
+
+  // The 2px inset moonlight bar means "you are here" — the one coloured left
+  // edge anywhere in the product.
+  &[aria-current="page"] {
+    background: var(--surface-selected);
+    color: var(--text-primary);
+    box-shadow: inset 2px 0 0 var(--accent);
+  }
+}
+
+.navCount {
+  margin-left: auto;
+  font: var(--type-mono-sm);
+  color: var(--text-muted);
+}
+
+// Pinned to the bottom of the sidebar: the app's status is never scrolled out of
+// view, because it is the thing you open the window to check.
+.status {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.statusHead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.mark {
+  color: var(--moonlight);
+}
+
+.markPaused {
+  color: var(--state-snoozed);
+}
+
+.scroll {
+  flex: 1;
+  overflow: auto;
+  padding: var(--space-8);
+
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--night-700);
+    border: 3px solid var(--surface-app);
+    border-radius: var(--radius-pill);
+  }
+}
+
+.warning {
+  margin-bottom: var(--gap-section);
+}
+
+.starting {
+  font: var(--type-body);
+  color: var(--text-secondary);
+}

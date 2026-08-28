@@ -1,0 +1,17 @@
+// Durations and timestamps are mono: they came from the machine.
+.idle {
+  font-family: var(--font-mono);
+}
+
+.when {
+  min-width: 96px;
+  font: var(--type-mono-sm);
+  color: var(--text-muted);
+  text-align: right;
+}
+
+.reason {
+  margin-top: var(--space-1);
+  font: var(--type-small);
+  color: var(--text-muted);
+}

@@ -1,6 +1,5 @@
-/* The whole design system, then the window chrome it is drawn on. */
+/* The design system's tokens and element defaults. */
 @import "./design/styles.css";
-@import "./design/kit/kit.css";
 
 /* .win is height:100%, so the chain from the document down has to be too.
    (The old rule targeted #app; index.html mounts into #root, so it never
@@ -9,4 +8,22 @@ html,
 body,
 #root {
   height: 100%;
+}
+
+/* The one shared animation: every view fades and slides 2px on mount. It lives
+   here rather than in a module because CSS modules scope @keyframes locally,
+   which would mean four identical copies of it. */
+.fade-in {
+  animation: fade var(--dur-base) var(--ease-out);
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }

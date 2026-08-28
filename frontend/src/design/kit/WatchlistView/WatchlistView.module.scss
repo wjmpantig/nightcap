@@ -1,0 +1,17 @@
+.view {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-section);
+}
+
+.addRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.addHint {
+  max-width: 280px;
+  font: var(--type-small);
+  color: var(--text-muted);
+}

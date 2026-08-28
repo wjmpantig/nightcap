@@ -11,6 +11,8 @@ import { Select } from "@/design/components/forms/Select"
 import { TextInput } from "@/design/components/forms/TextInput"
 import { humanRemaining, SNOOZE_OPTIONS } from "@/format"
 import type { WatchEntry } from "@/types"
+import { cx } from "@/utils/cx"
+import styles from "./WatchlistView.module.scss"
 
 interface WatchlistViewProps {
   entries: WatchEntry[]
@@ -32,10 +34,7 @@ export function WatchlistView({
   const [draft, setDraft] = useState("")
   const now = Date.now()
   return (
-    <div
-      className="fade-in"
-      style={{ display: "flex", flexDirection: "column", gap: "var(--gap-section)" }}
-    >
+    <div className={cx("fade-in", styles.view)}>
       <Panel pad={false}>
         <SectionHeader
           title="Watchlist"
@@ -98,7 +97,7 @@ export function WatchlistView({
       </Panel>
 
       <Panel>
-        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-5)" }}>
+        <div className={styles.addRow}>
           <TextInput
             icon="plus"
             placeholder="Add an executable, e.g. spotify.exe"
@@ -116,7 +115,7 @@ export function WatchlistView({
           >
             Add to watchlist
           </Button>
-          <span style={{ font: "var(--type-small)", color: "var(--text-muted)", maxWidth: 280 }}>
+          <span className={styles.addHint}>
             Shared runtimes like msedgewebview2.exe are refused — watch the owning app instead.
           </span>
         </div>

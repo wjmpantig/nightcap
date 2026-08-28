@@ -5,6 +5,8 @@ import { Checkbox } from "@/design/components/forms/Checkbox"
 import { NumberField } from "@/design/components/forms/NumberField"
 import { Switch } from "@/design/components/forms/Switch"
 import type { Settings } from "@/types"
+import { cx } from "@/utils/cx"
+import styles from "./SettingsView.module.scss"
 
 interface SettingsViewProps {
   cfg: Settings
@@ -19,29 +21,10 @@ interface SettingProps {
 
 function Setting({ label, hint, children }: SettingProps) {
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "flex-start",
-        gap: "var(--space-6)",
-        padding: "var(--space-5) 0",
-        borderTop: "1px solid var(--line)",
-      }}
-    >
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ font: "var(--type-body-strong)" }}>{label}</div>
-        {hint && (
-          <div
-            style={{
-              font: "var(--type-small)",
-              color: "var(--text-muted)",
-              marginTop: 2,
-              maxWidth: 440,
-            }}
-          >
-            {hint}
-          </div>
-        )}
+    <div className={styles.setting}>
+      <div className={styles.settingText}>
+        <div className={styles.settingLabel}>{label}</div>
+        {hint && <div className={styles.settingHint}>{hint}</div>}
       </div>
       {children}
     </div>
@@ -50,13 +33,10 @@ function Setting({ label, hint, children }: SettingProps) {
 
 export function SettingsView({ cfg, onChange }: SettingsViewProps) {
   return (
-    <div
-      className="fade-in"
-      style={{ display: "flex", flexDirection: "column", gap: "var(--gap-section)" }}
-    >
+    <div className={cx("fade-in", styles.view)}>
       <Panel pad={false}>
         <SectionHeader title="Rules" />
-        <div style={{ padding: "0 var(--pad-panel) var(--space-4)" }}>
+        <div className={styles.rules}>
           <Setting
             label="Close watched apps after"
             hint="Time with no keyboard or mouse input before a watched app is terminated."
@@ -83,14 +63,7 @@ export function SettingsView({ cfg, onChange }: SettingsViewProps) {
 
       <Panel pad={false}>
         <SectionHeader title="Startup and state" />
-        <div
-          style={{
-            padding: "var(--space-6) var(--pad-panel)",
-            display: "flex",
-            flexDirection: "column",
-            gap: "var(--space-6)",
-          }}
-        >
+        <div className={styles.startup}>
           <Checkbox
             checked={cfg.autostart}
             onChange={(e) => onChange({ autostart: e.target.checked })}
@@ -103,22 +76,14 @@ export function SettingsView({ cfg, onChange }: SettingsViewProps) {
             onChange={(e) => onChange({ paused: e.target.checked })}
             label="Pause watching"
           />
-          <div style={{ font: "var(--type-small)", color: "var(--text-muted)", marginTop: -8 }}>
+          <div className={styles.pauseNote}>
             Nothing is closed while paused. The watchlist is kept. Also available in the tray menu.
           </div>
         </div>
       </Panel>
 
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "var(--space-5)",
-          font: "var(--type-small)",
-          color: "var(--text-muted)",
-        }}
-      >
-        <span style={{ fontFamily: "var(--font-mono)" }}>%APPDATA%\nightcap\config.json</span>
+      <div className={styles.configPath}>
+        <span>%APPDATA%\nightcap\config.json</span>
       </div>
     </div>
   )

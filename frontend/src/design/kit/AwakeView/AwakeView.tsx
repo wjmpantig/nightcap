@@ -8,6 +8,8 @@ import { ListRow } from "@/design/components/data/ListRow"
 import { ProcessName } from "@/design/components/data/ProcessName"
 import { targetsOf } from "@/format"
 import type { Request } from "@/types"
+import { cx } from "@/utils/cx"
+import styles from "./AwakeView.module.scss"
 
 interface AwakeViewProps {
   requests: Request[]
@@ -26,10 +28,7 @@ export function AwakeView({ requests, watched, onWatch, onRefresh, error }: Awak
   const killable = requests.filter((r) => r.exe !== "")
   const drivers = requests.filter((r) => r.exe === "")
   return (
-    <div
-      className="fade-in"
-      style={{ display: "flex", flexDirection: "column", gap: "var(--gap-section)" }}
-    >
+    <div className={cx("fade-in", styles.view)}>
       <Panel pad={false}>
         <SectionHeader
           title="Keeping this PC awake"
@@ -42,7 +41,7 @@ export function AwakeView({ requests, watched, onWatch, onRefresh, error }: Awak
           }
         />
         {error ? (
-          <div style={{ padding: "var(--pad-panel)" }}>
+          <div className={styles.errorSlot}>
             <Banner tone="error" title="nightcap could not check what is keeping this PC awake">
               {error}
             </Banner>
@@ -105,9 +104,7 @@ export function AwakeView({ requests, watched, onWatch, onRefresh, error }: Awak
                 </Badge>
               }
             >
-              <div style={{ font: "var(--type-body)", color: "var(--text-secondary)" }}>
-                {r.reason}
-              </div>
+              <div className={styles.driverReason}>{r.reason}</div>
             </ListRow>
           ))}
         </Panel>

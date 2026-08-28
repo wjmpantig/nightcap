@@ -1,0 +1,62 @@
+.view {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-section);
+}
+
+// One setting per row, separated by a hairline. The hint carries the mechanism —
+// the reason, not a restatement of the label.
+.setting {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-6);
+  padding: var(--space-5) 0;
+  border-top: 1px solid var(--line);
+}
+
+.settingText {
+  flex: 1;
+  min-width: 0;
+}
+
+.settingLabel {
+  font: var(--type-body-strong);
+}
+
+.settingHint {
+  max-width: 440px;
+  margin-top: var(--space-1);
+  font: var(--type-small);
+  color: var(--text-muted);
+}
+
+// The rules list is inset so its hairlines stop short of the panel edge.
+.rules {
+  padding: 0 var(--pad-panel) var(--space-4);
+}
+
+.startup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding: var(--space-6) var(--pad-panel);
+}
+
+// Sits directly under the pause switch it explains.
+.pauseNote {
+  margin-top: calc(var(--space-4) * -1);
+  font: var(--type-small);
+  color: var(--text-muted);
+}
+
+.configPath {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  font: var(--type-small);
+  color: var(--text-muted);
+
+  span {
+    font-family: var(--font-mono);
+  }
+}

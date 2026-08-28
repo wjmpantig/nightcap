@@ -7,6 +7,7 @@ import { ListRow } from "@/design/components/data/ListRow"
 import { ProcessName } from "@/design/components/data/ProcessName"
 import { mmss, whenKilled } from "@/format"
 import type { KillRecord } from "@/types"
+import styles from "./HistoryView.module.scss"
 
 interface HistoryViewProps {
   history: KillRecord[]
@@ -40,26 +41,11 @@ export function HistoryView({ history, onClear }: HistoryViewProps) {
                 closed
               </Badge>
             }
-            meta={
-              <span style={{ fontFamily: "var(--font-mono)" }}>after {mmss(h.idleSecs)} idle</span>
-            }
-            actions={
-              <span
-                style={{
-                  font: "var(--type-mono-sm)",
-                  color: "var(--text-muted)",
-                  minWidth: 96,
-                  textAlign: "right",
-                }}
-              >
-                {whenKilled(h.at)}
-              </span>
-            }
+            meta={<span className={styles.idle}>after {mmss(h.idleSecs)} idle</span>}
+            actions={<span className={styles.when}>{whenKilled(h.at)}</span>}
           >
             <ProcessName exe={h.exe} />
-            <div style={{ font: "var(--type-small)", color: "var(--text-muted)", marginTop: 2 }}>
-              {h.reason}
-            </div>
+            <div className={styles.reason}>{h.reason}</div>
           </ListRow>
         ))}
       </Panel>
