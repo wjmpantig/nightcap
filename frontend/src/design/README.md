@@ -1,7 +1,8 @@
 # nightcap — design system
 
-Imported from the claude.ai/design project `nightcap Design System`. Source of truth for the
-proposed visual direction; the shipped `src/App.css` is not.
+Imported from the claude.ai/design project `nightcap Design System`, and now what the app actually
+renders: `src/App.tsx` is the shell over `kit/`, and `src/style.css` pulls in `styles.css` below.
+The old `src/App.css` palette it replaced is gone.
 
 nightcap is a Windows desktop utility. Some apps take a power request (`powercfg /requests`) and
 forget to let go, so the PC never sleeps. nightcap shows you who is doing it, lets you put the repeat
@@ -12,10 +13,11 @@ and one tray menu. There is no marketing site, no docs site, no mobile app. Ever
 for that: dense, near-black, keyboard- and mouse-driven desktop chrome that has to be trustworthy
 enough to terminate your processes at 3am.
 
-**Deliberate departure:** the brief asked for a proposed direction, *not* a copy of the shipped UI.
-So the shipped `src/App.css` palette (`#11131a` slate, Nunito, no brand colour) and its single-column
-table layout are **not** the system of record here. `kit/README.md` has a row-by-row table of what
-changed and why. The brand asset pack (`assets-2b/`) **is** ground truth and is followed exactly.
+**Deliberate departure:** the brief asked for a proposed direction, *not* a copy of the UI nightcap
+was shipping. That direction has since replaced it — the old `src/App.css` palette (`#11131a` slate,
+Nunito, no brand colour) and its single-column table layout are gone. `kit/README.md` has a
+row-by-row table of what changed and why. The brand asset pack (`assets-2b/`) **is** ground truth and
+is followed exactly.
 
 ---
 
@@ -215,7 +217,7 @@ the asset pack's own note.
 | `styles.css` | The single entry point consumers link. `@import` list only. |
 | `tokens/` | `fonts.css`, `colors.css`, `typography.css`, `spacing.css`, `radius-shadow.css`, `motion.css`, `theme-light.css`, `base.css` |
 | `components/` | The React primitives — see below |
-| `kit/` | The nightcap window, mock-data only: 7 views + `mock.ts` + `kit.css` + its own README |
+| `kit/` | The nightcap window — the **live** app views that `src/App.tsx` renders, + `kit.css` + its own README |
 
 Not imported from the design project: the 15 `guidelines/*.card.html` foundation specimens, the
 `.prompt.md` per-component usage docs, `templates/app-window/`, the `_ds_*` preview harness, and the

@@ -68,6 +68,14 @@ crossing the boundary goes through `normalize()` in `watcher.go` (Status) or `sa
 `config.go` (Config). If you add a slice field to a boundary type, add it to one of those and to
 `json_test.go`. This is the bug that blanked the UI once already.
 
+**The UI is the imported design system, and `App.tsx` is the only place that talks to Go.**
+`src/design/` holds the tokens (`styles.css`, pulled in by `src/style.css`), the primitives in
+`components/`, and the app's four views plus the countdown overlay in `kit/`. Those views are
+presentational: no state, no bindings, data and callbacks in from `App.tsx`. Boundary types live in
+`src/types.ts` and the shared formatters in `src/format.ts` — `wailsjs/models.ts` has never been
+generated here, so the bound methods' return types are useless and every call site casts. Read
+`src/design/README.md` before changing anything visual; it is the rulebook the components follow.
+
 Wails injects `window.go` *after* the page starts executing, and the generated bindings dereference
 it eagerly — so calling a bound method too early throws a **synchronous** TypeError, not a rejected
 promise. Thrown from an effect that unmounts the React tree and leaves a blank window until a manual
