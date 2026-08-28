@@ -1,5 +1,7 @@
 import type { HTMLAttributes } from "react"
 import { Icon } from "@/design/components/core/Icon"
+import { cx } from "@/utils/cx"
+import styles from "./ProcessName.module.scss"
 
 /**
  * A process identity cell: mono executable name plus the owner chain nightcap resolved for it.
@@ -19,37 +21,18 @@ export function ProcessName({
   hosts = [],
   path,
   size = "md",
-  style,
+  className,
   ...rest
 }: ProcessNameProps) {
   const shared = hosts.length > 1
   return (
-    <div {...rest} style={{ minWidth: 0, ...style }}>
-      <div
-        style={{
-          font: size === "sm" ? "var(--type-mono-sm)" : "var(--type-mono)",
-          color: "var(--text-primary)",
-          letterSpacing: "-0.01em",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
-        title={path || exe}
-      >
+    <div {...rest} className={cx(styles.wrap, size === "sm" && styles.sm, className)}>
+      <div className={styles.exe} title={path || exe}>
         {exe}
       </div>
       {hosts.length > 0 && (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "var(--space-2)",
-            font: "var(--type-small)",
-            color: "var(--text-muted)",
-            marginTop: 2,
-          }}
-        >
-          {shared && <Icon name="git-fork" size={11} color="var(--state-locked)" />}
+        <div className={styles.owners}>
+          {shared && <Icon name="git-fork" size={11} className={styles.forked} />}
           <span>
             {shared ? "shared runtime, owned by " : "owned by "}
             {hosts.join(", ")}

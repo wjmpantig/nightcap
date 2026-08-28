@@ -1,0 +1,59 @@
+// The bar turning amber past 75% is the only element in nightcap that changes
+// colour on its own. --fill is the width; the .near class is the threshold.
+.meter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 180px;
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-4);
+}
+
+.label {
+  font: var(--type-label);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-label);
+  color: var(--text-muted);
+}
+
+.value {
+  font: var(--type-mono);
+  color: var(--text-primary);
+}
+
+.of {
+  margin-left: auto;
+  font: var(--type-mono-sm);
+  color: var(--text-muted);
+}
+
+.track {
+  height: 3px;
+  background: var(--night-700);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.fill {
+  width: var(--fill);
+  height: 100%;
+  background: var(--accent);
+  transition:
+    width var(--dur-tick) linear,
+    background var(--dur-base) var(--ease-out);
+}
+
+.near {
+  .value,
+  .fill {
+    color: var(--state-awake);
+  }
+
+  .fill {
+    background: var(--state-awake);
+  }
+}

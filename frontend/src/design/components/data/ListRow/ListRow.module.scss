@@ -1,0 +1,46 @@
+// One hairline between rows, no zebra striping, and no border above the first.
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  min-height: var(--row-height);
+  padding: var(--space-3) var(--pad-panel);
+  border-top: 1px solid var(--line);
+  transition: background-color var(--dur-fast) var(--ease-out);
+
+  &:first-child {
+    border-top: 0;
+  }
+}
+
+.interactive:hover {
+  background: var(--surface-hover);
+}
+
+// The 2px inset bar is the one coloured left edge in the product: "you are here".
+.selected {
+  background: var(--surface-selected);
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+
+.muted {
+  opacity: 0.55;
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+}
+
+.meta {
+  font: var(--type-small);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}

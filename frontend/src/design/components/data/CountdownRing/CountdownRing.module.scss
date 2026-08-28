@@ -1,0 +1,48 @@
+// --ring-size is the box, --ring-tone the stroke. The arc itself is SVG geometry
+// (dasharray/dashoffset) and stays on the element.
+//
+// Strictly linear at exactly 1s per tick: a countdown has to be readable as
+// time. No easing, no pulse — the one thing in this product that must never look
+// playful is thirty seconds before a TerminateProcess.
+.ring {
+  position: relative;
+  flex: 0 0 auto;
+  width: var(--ring-size);
+  height: var(--ring-size);
+}
+
+.svg {
+  transform: rotate(-90deg);
+}
+
+.track {
+  stroke: var(--night-700);
+}
+
+.arc {
+  stroke: var(--ring-tone);
+  transition: stroke-dashoffset var(--dur-tick) linear;
+}
+
+.readout {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+}
+
+.secs {
+  font: var(--type-numeric);
+  font-size: calc(var(--ring-size) * 0.3);
+  color: var(--ring-tone);
+}
+
+.unit {
+  font: var(--type-label);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-label);
+  color: var(--text-muted);
+}
