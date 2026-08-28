@@ -1,0 +1,21 @@
+:root {
+  /* Corners are tight — this is a system tool, not a consumer app.
+     5px on controls, 10px on panels, 22% squircle only on the app icon. */
+  --radius-xs: 3px;
+  --radius-sm: 5px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-pill: 999px;
+  --radius-icon-tile: 22%;
+
+  --border-hairline: 1px;
+
+  /* Depth on a near-black UI comes from a lighter top edge, not a drop shadow. */
+  --shadow-edge-top: inset 0 1px 0 var(--paper-a06);
+  --shadow-panel: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-raised: 0 6px 18px -10px rgba(0, 0, 0, 0.8), inset 0 1px 0 var(--paper-a06);
+  --shadow-overlay: 0 24px 64px -16px rgba(0, 0, 0, 0.85);
+  --glow-moon: 0 0 0 1px var(--moonlight-a32), 0 0 28px -8px var(--moonlight-a32);
+  --glow-amber: 0 0 24px -8px var(--amber-a12);
+  --ring-focus: 0 0 0 2px var(--focus-ring);
+}

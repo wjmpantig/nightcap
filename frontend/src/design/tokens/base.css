@@ -1,0 +1,48 @@
+/* Minimal element defaults. Components carry their own styles. */
+html {
+  color-scheme: dark;
+}
+body {
+  margin: 0;
+  background: var(--surface-app);
+  color: var(--text-primary);
+  font: var(--type-body);
+  -webkit-font-smoothing: antialiased;
+  text-wrap: pretty;
+}
+h1, h2, h3, h4 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-tight);
+}
+a {
+  color: var(--text-accent);
+  text-decoration: none;
+  border-bottom: 1px solid var(--moonlight-a32);
+  transition: var(--transition-control);
+}
+a:hover {
+  color: var(--accent-hover);
+  border-bottom-color: var(--accent-hover);
+}
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.95em;
+}
+::selection {
+  background: var(--moonlight-a32);
+}
+:focus-visible {
+  outline: none;
+  box-shadow: var(--ring-focus);
+}
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

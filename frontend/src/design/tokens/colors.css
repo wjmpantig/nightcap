@@ -1,0 +1,75 @@
+/* nightcap palette — "Moonset". Base five come from assets-2b/README.md;
+   everything else is derived in oklch from those five. Dark is the default theme. */
+:root {
+  /* --- base ramp: night --- */
+  --night: #0a0c10;
+  --night-950: #07090d;
+  --night-900: #0f1420;
+  --night-850: #10141c;
+  --night-800: #151a24;
+  --night-700: #1e2431;
+  --night-600: #2a3242;
+  --night-500: #3a4457;
+
+  /* --- base ramp: paper --- */
+  --paper: #e8eaee;
+  --paper-dim: #9aa3b4;
+  --paper-faint: #6b7484;
+
+  /* --- hues --- */
+  --moonlight: #7fb3ff;
+  --moonlight-dim: #5b8ed6;
+  --moonlight-deep: #2f6fd0; /* for light backgrounds */
+  --amber: #ffc27f;
+  --amber-dim: #d69f62;
+  --amber-deep: #b8791f; /* for light backgrounds */
+  --ember: #ff8b7a;
+  --ember-dim: #d66a5c;
+
+  /* --- alpha washes (hover / selection / focus rings) --- */
+  --moonlight-a08: color-mix(in oklch, var(--moonlight) 8%, transparent);
+  --moonlight-a16: color-mix(in oklch, var(--moonlight) 16%, transparent);
+  --moonlight-a32: color-mix(in oklch, var(--moonlight) 32%, transparent);
+  --amber-a12: color-mix(in oklch, var(--amber) 12%, transparent);
+  --ember-a12: color-mix(in oklch, var(--ember) 12%, transparent);
+  --paper-a06: color-mix(in oklch, var(--paper) 6%, transparent);
+  --paper-a12: color-mix(in oklch, var(--paper) 12%, transparent);
+
+  /* --- semantic surfaces --- */
+  --surface-app: var(--night);
+  --surface-sunken: var(--night-950);
+  --surface-panel: var(--night-850);
+  --surface-raised: var(--night-800);
+  --surface-tile: var(--night-900); /* the icon tile colour */
+  --surface-hover: var(--paper-a06);
+  --surface-selected: var(--moonlight-a08);
+  --surface-overlay: color-mix(in oklch, var(--night-950) 78%, transparent);
+
+  /* --- semantic lines --- */
+  --line: var(--night-700);
+  --line-strong: var(--night-600);
+  --line-accent: var(--moonlight-a32);
+
+  /* --- semantic text --- */
+  --text-primary: var(--paper);
+  --text-secondary: var(--paper-dim);
+  --text-muted: var(--paper-faint);
+  --text-accent: var(--moonlight);
+  --text-on-accent: var(--night);
+  --text-inverse: var(--night-900);
+
+  /* --- state colours: one hue per meaning --- */
+  --state-awake: var(--amber); /* something is holding a wake lock */
+  --state-watched: var(--moonlight); /* on the watchlist, armed */
+  --state-closed: var(--ember); /* terminated by nightcap */
+  --state-snoozed: var(--paper-faint); /* paused, intentionally quiet */
+  --state-locked: var(--night-500); /* driver/service — cannot be closed */
+
+  /* --- controls --- */
+  --accent: var(--moonlight);
+  --accent-hover: color-mix(in oklch, var(--moonlight) 88%, var(--paper));
+  --accent-press: var(--moonlight-dim);
+  --danger: var(--ember);
+  --danger-hover: color-mix(in oklch, var(--ember) 88%, var(--paper));
+  --focus-ring: var(--moonlight-a32);
+}

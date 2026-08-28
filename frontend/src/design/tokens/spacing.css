@@ -1,0 +1,32 @@
+/* 4px grid with a 6px half-step for control padding. */
+:root {
+  --space-0: 0;
+  --space-1: 2px;
+  --space-2: 4px;
+  --space-3: 6px;
+  --space-4: 8px;
+  --space-5: 12px;
+  --space-6: 16px;
+  --space-7: 20px;
+  --space-8: 24px;
+  --space-9: 32px;
+  --space-10: 40px;
+  --space-11: 48px;
+  --space-12: 64px;
+
+  --gap-inline: var(--space-3); /* between a label and its value */
+  --gap-control: var(--space-4); /* between sibling buttons */
+  --gap-row: var(--space-5); /* between rows in a list */
+  --gap-section: var(--space-6); /* between panels */
+  --pad-panel: var(--space-6);
+  --pad-row: var(--space-5);
+  --pad-control-x: var(--space-5);
+  --pad-control-y: var(--space-3);
+
+  --row-height: 44px; /* list rows stay 44px — clickable, still dense */
+  --control-height: 30px;
+  --control-height-lg: 36px;
+  --app-width: 940px; /* the desktop window's content column */
+  --sidebar-width: 216px;
+  --titlebar-height: 38px;
+}

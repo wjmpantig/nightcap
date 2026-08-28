@@ -1,0 +1,39 @@
+/* Light theme exists for docs, print and the Windows light-tray context.
+   Accents darken to the pack's light-background pair: #2f6fd0 / #b8791f. */
+[data-theme="light"] {
+  --surface-app: #f6f7f9;
+  --surface-sunken: #eceef2;
+  --surface-panel: #ffffff;
+  --surface-raised: #ffffff;
+  --surface-tile: var(--night-900);
+  --surface-hover: rgba(15, 20, 32, 0.05);
+  --surface-selected: color-mix(in oklch, var(--moonlight-deep) 10%, transparent);
+  --surface-overlay: rgba(15, 20, 32, 0.4);
+
+  --line: #d9dde4;
+  --line-strong: #c2c8d2;
+  --line-accent: color-mix(in oklch, var(--moonlight-deep) 40%, transparent);
+
+  --text-primary: #14181f;
+  --text-secondary: #4c5563;
+  --text-muted: #6f7787;
+  --text-accent: var(--moonlight-deep);
+  --text-on-accent: #ffffff;
+  --text-inverse: var(--paper);
+
+  --state-awake: var(--amber-deep);
+  --state-watched: var(--moonlight-deep);
+  --state-closed: #c8503c;
+  --state-snoozed: #6f7787;
+  --state-locked: #9aa2b0;
+
+  --accent: var(--moonlight-deep);
+  --accent-hover: color-mix(in oklch, var(--moonlight-deep) 88%, black);
+  --accent-press: color-mix(in oklch, var(--moonlight-deep) 76%, black);
+  --danger: #c8503c;
+  --danger-hover: #b0442f;
+
+  --shadow-edge-top: none;
+  --shadow-panel: 0 1px 2px rgba(15, 20, 32, 0.08);
+  --shadow-raised: 0 8px 20px -12px rgba(15, 20, 32, 0.25);
+}

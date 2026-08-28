@@ -1,0 +1,11 @@
+/* Fonts are loaded from Google Fonts. The lockup art specifies Space Grotesk Medium;
+   IBM Plex Sans / Mono are our pick for UI + process data (see README.md → Visual foundations).
+   No binaries shipped with the repo — swap these @import lines for self-hosted @font-face
+   rules if nightcap ever needs to render offline. */
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap");
+
+:root {
+  --font-display: "Space Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --font-sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", "Cascadia Mono", Consolas, monospace;
+}
