@@ -1,5 +1,3 @@
-import { mmss, whenKilled } from "@/format"
-import type { KillRecord } from "@/types"
 import { Badge } from "@/design/components/core/Badge"
 import { Button } from "@/design/components/core/Button"
 import { EmptyState } from "@/design/components/core/EmptyState"
@@ -7,6 +5,8 @@ import { Panel } from "@/design/components/core/Panel"
 import { SectionHeader } from "@/design/components/core/SectionHeader"
 import { ListRow } from "@/design/components/data/ListRow"
 import { ProcessName } from "@/design/components/data/ProcessName"
+import { mmss, whenKilled } from "@/format"
+import type { KillRecord } from "@/types"
 
 interface HistoryViewProps {
   history: KillRecord[]

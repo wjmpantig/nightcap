@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes } from "react"
-import { cx } from "@/utils/cx"
 import type { IconName } from "@/design/components/core/Icon"
 import { Icon } from "@/design/components/core/Icon"
+import { cx } from "@/utils/cx"
 import styles from "./Button.module.scss"
 
 /**

@@ -1,0 +1,45 @@
+// The native select is correct on a desktop app — no custom dropdown. Only the
+// chevron is ours, because appearance:none takes the platform one away.
+.select {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: var(--field-width);
+  height: var(--control-height);
+  background: var(--surface-raised);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-edge-top);
+  transition: var(--transition-control);
+
+  &:hover {
+    border-color: var(--line-accent);
+  }
+  &:focus-within {
+    border-color: var(--accent);
+    box-shadow: var(--ring-focus);
+  }
+
+  select {
+    appearance: none;
+    height: 100%;
+    padding: 0 var(--space-8) 0 var(--space-4);
+    background: none;
+    border: 0;
+    outline: none;
+    color: var(--text-primary);
+    font: var(--type-body-strong);
+    cursor: pointer;
+  }
+}
+
+.disabled {
+  opacity: 0.45;
+}
+
+.chevron {
+  position: absolute;
+  right: var(--space-4);
+  color: var(--text-muted);
+  pointer-events: none;
+}

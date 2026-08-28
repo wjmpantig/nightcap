@@ -1,8 +1,8 @@
 import type { HTMLAttributes, ReactNode } from "react"
-import { cx } from "@/utils/cx"
 import type { IconName } from "@/design/components/core/Icon"
 import { Icon } from "@/design/components/core/Icon"
 import { IconButton } from "@/design/components/core/IconButton"
+import { cx } from "@/utils/cx"
 import styles from "./Banner.module.scss"
 
 export interface BannerProps extends Omit<HTMLAttributes<HTMLDivElement>, "title"> {

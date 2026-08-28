@@ -1,0 +1,51 @@
+// --field-width comes from the width prop. Machine data is mono everywhere in
+// nightcap, so the value is mono while the placeholder stays sans — a hint is
+// prose, an exe name is not.
+.field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: var(--field-width);
+  height: var(--control-height);
+  padding: 0 var(--space-4);
+  background: var(--surface-sunken);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  transition: var(--transition-control);
+
+  &:hover {
+    border-color: var(--line-accent);
+  }
+  &:focus-within {
+    border-color: var(--accent);
+    box-shadow: var(--ring-focus);
+  }
+
+  input {
+    flex: 1;
+    min-width: 0;
+    background: none;
+    border: 0;
+    outline: none;
+    color: var(--text-primary);
+    font: var(--type-mono);
+
+    &::placeholder {
+      color: var(--text-muted);
+      font-family: var(--font-sans);
+    }
+  }
+}
+
+.invalid {
+  border-color: var(--danger);
+}
+
+.disabled {
+  opacity: 0.45;
+}
+
+.suffix {
+  font: var(--type-small);
+  color: var(--text-muted);
+}

@@ -1,0 +1,53 @@
+// Right-aligned mono digits with the spinners stripped: every timeout in
+// nightcap is typed, not nudged.
+.field {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: var(--field-width);
+  height: var(--control-height);
+  padding: 0 var(--space-4);
+  background: var(--surface-sunken);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  transition: var(--transition-control);
+
+  &:hover {
+    border-color: var(--line-accent);
+  }
+  &:focus-within {
+    border-color: var(--accent);
+    box-shadow: var(--ring-focus);
+  }
+
+  input {
+    width: 100%;
+    background: none;
+    border: 0;
+    outline: none;
+    color: var(--text-primary);
+    font: var(--type-mono);
+    text-align: right;
+    appearance: textfield;
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      appearance: none;
+      margin: 0;
+    }
+
+    &::placeholder {
+      color: var(--text-muted);
+    }
+  }
+}
+
+.disabled {
+  opacity: 0.45;
+}
+
+.unit {
+  font: var(--type-small);
+  color: var(--text-muted);
+  white-space: nowrap;
+}

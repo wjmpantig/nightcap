@@ -1,0 +1,58 @@
+// The native input is kept for keyboard and screen readers and hidden visually;
+// the box next to it is what you see. 3px corners — the tightest radius in the
+// product, and the only place it is used.
+.check {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  font: var(--type-body);
+  color: var(--text-primary);
+  cursor: pointer;
+
+  input {
+    position: absolute;
+    width: 0;
+    height: 0;
+    opacity: 0;
+  }
+
+  &:hover .box {
+    border-color: var(--line-accent);
+  }
+
+  input:checked + .box {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--text-on-accent);
+  }
+
+  input:focus-visible + .box {
+    box-shadow: var(--ring-focus);
+  }
+}
+
+.box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
+  background: var(--surface-sunken);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-xs);
+  transition: var(--transition-control);
+}
+
+.hint {
+  display: block;
+  margin-top: var(--space-1);
+  font: var(--type-small);
+  color: var(--text-muted);
+}
+
+.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}

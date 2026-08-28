@@ -1,5 +1,3 @@
-import { targetsOf } from "@/format"
-import type { Request } from "@/types"
 import { Badge } from "@/design/components/core/Badge"
 import { Banner } from "@/design/components/core/Banner"
 import { Button } from "@/design/components/core/Button"
@@ -8,6 +6,8 @@ import { Panel } from "@/design/components/core/Panel"
 import { SectionHeader } from "@/design/components/core/SectionHeader"
 import { ListRow } from "@/design/components/data/ListRow"
 import { ProcessName } from "@/design/components/data/ProcessName"
+import { targetsOf } from "@/format"
+import type { Request } from "@/types"
 
 interface AwakeViewProps {
   requests: Request[]

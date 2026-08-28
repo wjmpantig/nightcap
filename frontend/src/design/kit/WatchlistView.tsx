@@ -1,6 +1,4 @@
 import { useState } from "react"
-import { humanRemaining, SNOOZE_OPTIONS } from "@/format"
-import type { WatchEntry } from "@/types"
 import { Badge } from "@/design/components/core/Badge"
 import { Button } from "@/design/components/core/Button"
 import { EmptyState } from "@/design/components/core/EmptyState"
@@ -11,6 +9,8 @@ import { ProcessName } from "@/design/components/data/ProcessName"
 import { NumberField } from "@/design/components/forms/NumberField"
 import { Select } from "@/design/components/forms/Select"
 import { TextInput } from "@/design/components/forms/TextInput"
+import { humanRemaining, SNOOZE_OPTIONS } from "@/format"
+import type { WatchEntry } from "@/types"
 
 interface WatchlistViewProps {
   entries: WatchEntry[]

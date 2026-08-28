@@ -1,6 +1,6 @@
 import type { CSSProperties, HTMLAttributes } from "react"
-import { cx } from "@/utils/cx"
 import { Mark } from "@/design/components/brand/Mark"
+import { cx } from "@/utils/cx"
 import styles from "./Lockup.module.scss"
 
 /**
