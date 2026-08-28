@@ -1,4 +1,5 @@
 import type { HTMLAttributes, ReactNode } from "react"
+import type { IconName } from "./Icon"
 import { Icon } from "./Icon"
 import { IconButton } from "./IconButton"
 
@@ -29,7 +30,7 @@ const TONES = {
     border: "color-mix(in oklch,var(--danger) 32%,transparent)",
     icon: "shield-alert",
   },
-}
+} satisfies Record<string, { color: string; bg: string; border: string; icon: IconName }>
 
 export function Banner({
   tone = "info",

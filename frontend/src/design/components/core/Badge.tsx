@@ -1,4 +1,5 @@
 import type { HTMLAttributes } from "react"
+import type { IconName } from "./Icon"
 import { Icon } from "./Icon"
 
 /**
@@ -10,7 +11,7 @@ export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   /** Leading 5px status dot. */
   dot?: boolean
   /** Lucide icon name shown before the label. */
-  icon?: string
+  icon?: IconName
   shape?: "pill" | "square"
 }
 

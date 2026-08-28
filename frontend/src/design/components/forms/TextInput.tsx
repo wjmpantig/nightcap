@@ -1,9 +1,10 @@
 import type { InputHTMLAttributes, ReactNode } from "react"
+import type { IconName } from "../core/Icon"
 import { Icon } from "../core/Icon"
 
 export interface TextInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "width"> {
   /** Lucide icon inside the field's left edge. */
-  icon?: string
+  icon?: IconName
   /** Static trailing text, e.g. ".exe". */
   suffix?: ReactNode
   invalid?: boolean

@@ -1,4 +1,5 @@
 import type { ButtonHTMLAttributes } from "react"
+import type { IconName } from "./Icon"
 import { Icon } from "./Icon"
 
 /**
@@ -9,9 +10,9 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "ghost" | "danger"
   size?: "sm" | "md" | "lg"
   /** Lucide icon name placed before the label. */
-  icon?: string
+  icon?: IconName
   /** Lucide icon name placed after the label. */
-  iconRight?: string
+  iconRight?: IconName
   block?: boolean
 }
 

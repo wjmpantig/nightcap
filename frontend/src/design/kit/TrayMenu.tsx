@@ -2,6 +2,7 @@ import type { ReactNode } from "react"
 import { mmss } from "../../format"
 import { Mark } from "../components/brand/Mark"
 import { Badge } from "../components/core/Badge"
+import type { IconName } from "../components/core/Icon"
 import { Icon } from "../components/core/Icon"
 
 interface TrayMenuProps {
@@ -13,7 +14,7 @@ interface TrayMenuProps {
 }
 
 interface TrayItemProps {
-  icon: string
+  icon: IconName
   children: ReactNode
   meta?: ReactNode
   onClick?: () => void

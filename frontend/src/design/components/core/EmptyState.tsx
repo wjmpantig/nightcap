@@ -1,9 +1,10 @@
 import type { HTMLAttributes, ReactNode } from "react"
+import type { IconName } from "./Icon"
 import { Icon } from "./Icon"
 
 export interface EmptyStateProps extends Omit<HTMLAttributes<HTMLDivElement>, "title"> {
   /** Lucide name. Defaults to "moon". */
-  icon?: string
+  icon?: IconName
   title: ReactNode
   action?: ReactNode
 }
