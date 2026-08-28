@@ -1,0 +1,43 @@
+// --iconbtn-size comes from the size prop: a square whose glyph is 56% of the edge.
+.iconbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--iconbtn-size);
+  height: var(--iconbtn-size);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition-control);
+
+  &:hover:not(:disabled) {
+    background: var(--surface-hover);
+    color: var(--text-primary);
+  }
+  &:active:not(:disabled) {
+    background: var(--surface-sunken);
+  }
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--ring-focus);
+  }
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.outlined {
+  border-color: var(--line-strong);
+  background: var(--surface-raised);
+}
+
+.danger,
+.close {
+  &:hover:not(:disabled) {
+    background: var(--ember-a12);
+    color: var(--danger);
+  }
+}

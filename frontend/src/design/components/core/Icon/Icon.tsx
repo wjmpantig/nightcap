@@ -26,6 +26,8 @@ import {
   Zap,
 } from "lucide-react"
 import type { SVGAttributes } from "react"
+import { cx } from "../../../cx"
+import styles from "./Icon.module.scss"
 
 // The glyph source lives in exactly one file: this registry. nightcap is an
 // offline desktop app, so the icons are imported from the lucide-react package
@@ -73,16 +75,16 @@ export interface IconProps extends SVGAttributes<SVGSVGElement> {
   color?: string
 }
 
-export function Icon({ name, size = 16, color = "currentColor", style, ...rest }: IconProps) {
+export function Icon({ name, size = 16, color = "currentColor", className, ...rest }: IconProps) {
   const Glyph = ICONS[name]
   return (
     <Glyph
+      className={cx(styles.icon, className)}
       size={size}
       color={color}
       strokeWidth={2}
       aria-hidden={rest["aria-label"] ? undefined : true}
       {...rest}
-      style={{ display: "inline-block", flex: "0 0 auto", verticalAlign: "middle", ...style }}
     />
   )
 }

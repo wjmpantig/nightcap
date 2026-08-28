@@ -1,0 +1,30 @@
+// Depth is a 1px lighter top edge, not a drop shadow. Only the window and the
+// countdown dialog cast a real shadow.
+.panel {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-panel), var(--shadow-edge-top);
+}
+
+.pad {
+  padding: var(--pad-panel);
+}
+
+.default {
+  background: var(--surface-panel);
+}
+
+.sunken {
+  background: var(--surface-sunken);
+}
+
+// The panel that is actively counting down gets a moonlight ring, not a bigger shadow.
+.accent {
+  background: var(--surface-panel);
+  border-color: var(--line-accent);
+  box-shadow: var(--glow-moon);
+}
+
+.quiet {
+  background: transparent;
+}

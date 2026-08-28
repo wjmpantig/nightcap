@@ -1,0 +1,61 @@
+// Tone is meaning, one hue per state — never decoration. The classes below are
+// the whole vocabulary; see design/README.md → Colour.
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 20px;
+  padding: 0 var(--space-4);
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  font: var(--type-label);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.square {
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
+}
+
+.dot {
+  width: 5px;
+  height: 5px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.neutral {
+  color: var(--text-secondary);
+  background: var(--paper-a06);
+  border-color: var(--line);
+}
+
+.awake {
+  color: var(--state-awake);
+  background: var(--amber-a12);
+  border-color: color-mix(in oklch, var(--state-awake) 28%, transparent);
+}
+
+.watched {
+  color: var(--state-watched);
+  background: var(--moonlight-a08);
+  border-color: var(--moonlight-a32);
+}
+
+.closed {
+  color: var(--state-closed);
+  background: var(--ember-a12);
+  border-color: color-mix(in oklch, var(--state-closed) 28%, transparent);
+}
+
+.snoozed {
+  color: var(--state-snoozed);
+  border-color: var(--line);
+}
+
+.locked {
+  color: var(--state-locked);
+  border-color: var(--line);
+}

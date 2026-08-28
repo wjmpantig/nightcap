@@ -1,0 +1,93 @@
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  height: var(--control-height);
+  padding: 0 var(--pad-control-x);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font: var(--type-body-strong);
+  letter-spacing: var(--tracking-tight);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: var(--transition-control);
+  user-select: none;
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--ring-focus);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.lg {
+  height: var(--control-height-lg);
+  padding: 0 var(--space-6);
+  font-size: var(--text-md);
+}
+
+.sm {
+  height: 24px;
+  padding: 0 var(--space-4);
+  font-size: var(--text-xs);
+}
+
+// Primary is the only variant whose fill changes colour on hover; it lightens
+// toward paper. See design/README.md → Interaction states.
+.primary {
+  background: var(--accent);
+  color: var(--text-on-accent);
+
+  &:hover:not(:disabled) {
+    background: var(--accent-hover);
+  }
+  &:active:not(:disabled) {
+    background: var(--accent-press);
+  }
+}
+
+.secondary {
+  background: var(--surface-raised);
+  color: var(--text-primary);
+  border-color: var(--line-strong);
+  box-shadow: var(--shadow-edge-top);
+
+  &:hover:not(:disabled) {
+    background: var(--surface-hover);
+    border-color: var(--moonlight-a32);
+  }
+  &:active:not(:disabled) {
+    background: var(--surface-sunken);
+  }
+}
+
+.ghost {
+  background: transparent;
+  color: var(--text-secondary);
+
+  &:hover:not(:disabled) {
+    background: var(--surface-hover);
+    color: var(--text-primary);
+  }
+}
+
+// Outlined, never a filled red block — this closes VLC, it is not a red alert.
+.danger {
+  background: transparent;
+  color: var(--danger);
+  border-color: color-mix(in oklch, var(--danger) 40%, transparent);
+
+  &:hover:not(:disabled) {
+    background: var(--ember-a12);
+    color: var(--danger-hover);
+  }
+}
+
+.block {
+  width: 100%;
+}

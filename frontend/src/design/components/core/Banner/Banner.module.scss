@@ -1,0 +1,52 @@
+// --banner-fg is the tone's hue; the icon and the title both take it, the body
+// text stays secondary so the colour marks the state and not the sentence.
+.banner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-5);
+  padding: var(--space-5) var(--space-6);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+}
+
+.info {
+  --banner-fg: var(--text-accent);
+  background: var(--moonlight-a08);
+  border-color: var(--moonlight-a32);
+}
+
+.warning {
+  --banner-fg: var(--state-awake);
+  background: var(--amber-a12);
+  border-color: color-mix(in oklch, var(--state-awake) 28%, transparent);
+}
+
+.error {
+  --banner-fg: var(--danger);
+  background: var(--ember-a12);
+  border-color: color-mix(in oklch, var(--danger) 32%, transparent);
+}
+
+.icon {
+  margin-top: 1px;
+  color: var(--banner-fg);
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font: var(--type-body-strong);
+  color: var(--banner-fg);
+
+  &:not(:only-child) {
+    margin-bottom: var(--space-1);
+  }
+}
+
+.text {
+  font: var(--type-body);
+  color: var(--text-secondary);
+}
