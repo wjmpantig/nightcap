@@ -1,9 +1,9 @@
-import type { InputHTMLAttributes, ReactNode } from 'react'
+import type { InputHTMLAttributes, ReactNode } from "react"
 
 export interface SwitchProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: ReactNode
   /** amber marks a switch whose ON state means "nightcap is not protecting your sleep". */
-  tone?: 'accent' | 'amber'
+  tone?: "accent" | "amber"
 }
 
 const CSS = `
@@ -22,21 +22,44 @@ const CSS = `
 `
 let injected = false
 function inject() {
-  if (injected || typeof document === 'undefined') return
+  if (injected || typeof document === "undefined") return
   injected = true
-  const el = document.createElement('style')
+  const el = document.createElement("style")
   el.textContent = CSS
   document.head.appendChild(el)
 }
 inject()
 
-export function Switch({ checked, onChange, label, tone = 'accent', disabled, style, ...rest }: SwitchProps) {
-  const cls = ['nc-switch', tone === 'amber' && 'nc-switch--amber', disabled && 'nc-switch--disabled']
-    .filter(Boolean).join(' ')
+export function Switch({
+  checked,
+  onChange,
+  label,
+  tone = "accent",
+  disabled,
+  style,
+  ...rest
+}: SwitchProps) {
+  const cls = [
+    "nc-switch",
+    tone === "amber" && "nc-switch--amber",
+    disabled && "nc-switch--disabled",
+  ]
+    .filter(Boolean)
+    .join(" ")
   return (
     <label className={cls} style={style}>
-      <input type="checkbox" role="switch" checked={!!checked} onChange={onChange} disabled={disabled} {...rest} />
-      <span className="nc-switch__track"><span className="nc-switch__knob" /></span>
+      <input
+        type="checkbox"
+        role="switch"
+        aria-checked={!!checked}
+        checked={!!checked}
+        onChange={onChange}
+        disabled={disabled}
+        {...rest}
+      />
+      <span className="nc-switch__track">
+        <span className="nc-switch__knob" />
+      </span>
       {label}
     </label>
   )

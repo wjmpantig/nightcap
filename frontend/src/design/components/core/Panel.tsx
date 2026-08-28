@@ -1,26 +1,30 @@
-import type { HTMLAttributes } from 'react'
+import type { HTMLAttributes } from "react"
 
 export interface PanelProps extends HTMLAttributes<HTMLElement> {
-  tone?: 'default' | 'sunken' | 'accent' | 'quiet'
+  tone?: "default" | "sunken" | "accent" | "quiet"
   /** Set false when the panel holds a full-bleed list. */
   pad?: boolean
 }
 
-export function Panel({ tone = 'default', pad = true, children, style, ...rest }: PanelProps) {
+export function Panel({ tone = "default", pad = true, children, style, ...rest }: PanelProps) {
   const tones = {
-    default: { background: 'var(--surface-panel)', borderColor: 'var(--line)' },
-    sunken: { background: 'var(--surface-sunken)', borderColor: 'var(--line)' },
-    accent: { background: 'var(--surface-panel)', borderColor: 'var(--line-accent)', boxShadow: 'var(--glow-moon)' },
-    quiet: { background: 'transparent', borderColor: 'var(--line)' },
+    default: { background: "var(--surface-panel)", borderColor: "var(--line)" },
+    sunken: { background: "var(--surface-sunken)", borderColor: "var(--line)" },
+    accent: {
+      background: "var(--surface-panel)",
+      borderColor: "var(--line-accent)",
+      boxShadow: "var(--glow-moon)",
+    },
+    quiet: { background: "transparent", borderColor: "var(--line)" },
   }
   return (
     <section
       {...rest}
       style={{
-        border: '1px solid var(--line)',
-        borderRadius: 'var(--radius-md)',
-        boxShadow: 'var(--shadow-panel), var(--shadow-edge-top)',
-        padding: pad ? 'var(--pad-panel)' : 0,
+        border: "1px solid var(--line)",
+        borderRadius: "var(--radius-md)",
+        boxShadow: "var(--shadow-panel), var(--shadow-edge-top)",
+        padding: pad ? "var(--pad-panel)" : 0,
         ...tones[tone],
         ...style,
       }}

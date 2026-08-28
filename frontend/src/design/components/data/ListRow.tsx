@@ -1,4 +1,4 @@
-import type { HTMLAttributes, ReactNode } from 'react'
+import type { HTMLAttributes, ReactNode } from "react"
 
 export interface ListRowProps extends HTMLAttributes<HTMLDivElement> {
   /** Fixed-width status slot: a Badge, Mark or state dot. */
@@ -25,22 +25,44 @@ const CSS = `
 `
 let injected = false
 function inject() {
-  if (injected || typeof document === 'undefined') return
+  if (injected || typeof document === "undefined") return
   injected = true
-  const el = document.createElement('style')
+  const el = document.createElement("style")
   el.textContent = CSS
   document.head.appendChild(el)
 }
 inject()
 
-export function ListRow({ leading, children, meta, actions, selected, muted, interactive = true, style, ...rest }: ListRowProps) {
-  const cls = ['nc-row', interactive && 'nc-row--hover', selected && 'nc-row--selected',
-    muted && 'nc-row--muted'].filter(Boolean).join(' ')
+export function ListRow({
+  leading,
+  children,
+  meta,
+  actions,
+  selected,
+  muted,
+  interactive = true,
+  style,
+  ...rest
+}: ListRowProps) {
+  const cls = [
+    "nc-row",
+    interactive && "nc-row--hover",
+    selected && "nc-row--selected",
+    muted && "nc-row--muted",
+  ]
+    .filter(Boolean)
+    .join(" ")
   return (
     <div className={cls} style={style} {...rest}>
       {leading}
       <div style={{ flex: 1, minWidth: 0 }}>{children}</div>
-      {meta && <div style={{ font: 'var(--type-small)', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>{meta}</div>}
+      {meta && (
+        <div
+          style={{ font: "var(--type-small)", color: "var(--text-muted)", whiteSpace: "nowrap" }}
+        >
+          {meta}
+        </div>
+      )}
       {actions && <div className="nc-row__actions">{actions}</div>}
     </div>
   )

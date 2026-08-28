@@ -9,21 +9,21 @@
 
 /** Resolves once Wails has injected its bindings and runtime. */
 export function whenReady(timeoutMs = 15000): Promise<boolean> {
-    const ready = () => Boolean((window as any).go && (window as any).runtime)
-    if (ready()) return Promise.resolve(true)
+  const ready = () => Boolean((window as any).go && (window as any).runtime)
+  if (ready()) return Promise.resolve(true)
 
-    return new Promise(resolve => {
-        const started = Date.now()
-        const poll = setInterval(() => {
-            if (ready()) {
-                clearInterval(poll)
-                resolve(true)
-            } else if (Date.now() - started > timeoutMs) {
-                clearInterval(poll)
-                resolve(false)
-            }
-        }, 50)
-    })
+  return new Promise((resolve) => {
+    const started = Date.now()
+    const poll = setInterval(() => {
+      if (ready()) {
+        clearInterval(poll)
+        resolve(true)
+      } else if (Date.now() - started > timeoutMs) {
+        clearInterval(poll)
+        resolve(false)
+      }
+    }, 50)
+  })
 }
 
 /**
@@ -31,9 +31,9 @@ export function whenReady(timeoutMs = 15000): Promise<boolean> {
  * so a missing binding can never escape into React's render cycle.
  */
 export function call<T>(fn: () => Promise<T>): Promise<T> {
-    try {
-        return Promise.resolve(fn())
-    } catch (e) {
-        return Promise.reject(e)
-    }
+  try {
+    return Promise.resolve(fn())
+  } catch (e) {
+    return Promise.reject(e)
+  }
 }

@@ -1,20 +1,19 @@
-import type { ButtonHTMLAttributes } from 'react'
-import { Icon } from './Icon'
+import type { ButtonHTMLAttributes } from "react"
+import { Icon } from "./Icon"
 
 /**
  * The one text button. Primary is moonlight-on-night and appears at most once per view;
  * destructive actions are the outlined danger variant, never a filled red block.
  */
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'ghost' | 'danger'
-  size?: 'sm' | 'md' | 'lg'
+  variant?: "primary" | "secondary" | "ghost" | "danger"
+  size?: "sm" | "md" | "lg"
   /** Lucide icon name placed before the label. */
   icon?: string
   /** Lucide icon name placed after the label. */
   iconRight?: string
   block?: boolean
 }
-
 
 const CSS = `
 .nc-btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--space-3);
@@ -40,25 +39,38 @@ const CSS = `
 `
 let injected = false
 function inject() {
-  if (injected || typeof document === 'undefined') return
+  if (injected || typeof document === "undefined") return
   injected = true
-  const el = document.createElement('style')
+  const el = document.createElement("style")
   el.textContent = CSS
   document.head.appendChild(el)
 }
 inject()
 
 export function Button({
-  variant = 'secondary', size = 'md', icon, iconRight, block = false,
-  children, className = '', ...rest
+  variant = "secondary",
+  size = "md",
+  icon,
+  iconRight,
+  block = false,
+  children,
+  className = "",
+  ...rest
 }: ButtonProps) {
-  const cls = ['nc-btn', 'nc-btn--' + variant, size !== 'md' && 'nc-btn--' + size,
-    block && 'nc-btn--block', className].filter(Boolean).join(' ')
+  const cls = [
+    "nc-btn",
+    `nc-btn--${variant}`,
+    size !== "md" && `nc-btn--${size}`,
+    block && "nc-btn--block",
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ")
   return (
     <button type="button" className={cls} {...rest}>
-      {icon && <Icon name={icon} size={size === 'sm' ? 13 : 15} />}
+      {icon && <Icon name={icon} size={size === "sm" ? 13 : 15} />}
       {children}
-      {iconRight && <Icon name={iconRight} size={size === 'sm' ? 13 : 15} />}
+      {iconRight && <Icon name={iconRight} size={size === "sm" ? 13 : 15} />}
     </button>
   )
 }

@@ -1,9 +1,10 @@
-import type { InputHTMLAttributes } from 'react'
+import type { InputHTMLAttributes } from "react"
 
 /**
  * Numeric field with a unit label. Every timeout in nightcap is entered through this.
  */
-export interface NumberFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'width' | 'type'> {
+export interface NumberFieldProps
+  extends Omit<InputHTMLAttributes<HTMLInputElement>, "width" | "type"> {
   /** Unit suffix, e.g. "min" or "sec". */
   unit?: string
   width?: number | string
@@ -23,19 +24,38 @@ const CSS = `
 `
 let injected = false
 function inject() {
-  if (injected || typeof document === 'undefined') return
+  if (injected || typeof document === "undefined") return
   injected = true
-  const el = document.createElement('style')
+  const el = document.createElement("style")
   el.textContent = CSS
   document.head.appendChild(el)
 }
 inject()
 
-export function NumberField({ value, onChange, unit, placeholder, min = 1, max, width = 92, disabled, style, ...rest }: NumberFieldProps) {
+export function NumberField({
+  value,
+  onChange,
+  unit,
+  placeholder,
+  min = 1,
+  max,
+  width = 92,
+  disabled,
+  style,
+  ...rest
+}: NumberFieldProps) {
   return (
     <label className="nc-num" style={{ width, opacity: disabled ? 0.45 : 1, ...style }}>
-      <input type="number" value={value} onChange={onChange} placeholder={placeholder}
-        min={min} max={max} disabled={disabled} {...rest} />
+      <input
+        type="number"
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        min={min}
+        max={max}
+        disabled={disabled}
+        {...rest}
+      />
       {unit && <span className="nc-num__unit">{unit}</span>}
     </label>
   )

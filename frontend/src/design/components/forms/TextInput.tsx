@@ -1,7 +1,7 @@
-import type { InputHTMLAttributes, ReactNode } from 'react'
-import { Icon } from '../core/Icon'
+import type { InputHTMLAttributes, ReactNode } from "react"
+import { Icon } from "../core/Icon"
 
-export interface TextInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'width'> {
+export interface TextInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "width"> {
   /** Lucide icon inside the field's left edge. */
   icon?: string
   /** Static trailing text, e.g. ".exe". */
@@ -9,7 +9,6 @@ export interface TextInputProps extends Omit<InputHTMLAttributes<HTMLInputElemen
   invalid?: boolean
   width?: number | string
 }
-
 
 const CSS = `
 .nc-input{display:flex;align-items:center;gap:var(--space-3);height:var(--control-height);
@@ -25,21 +24,42 @@ const CSS = `
 `
 let injected = false
 function inject() {
-  if (injected || typeof document === 'undefined') return
+  if (injected || typeof document === "undefined") return
   injected = true
-  const el = document.createElement('style')
+  const el = document.createElement("style")
   el.textContent = CSS
   document.head.appendChild(el)
 }
 inject()
 
-export function TextInput({ value, onChange, placeholder, icon, suffix, invalid, disabled, width, style, ...rest }: TextInputProps) {
-  const cls = ['nc-input', invalid && 'nc-input--invalid', disabled && 'nc-input--disabled'].filter(Boolean).join(' ')
+export function TextInput({
+  value,
+  onChange,
+  placeholder,
+  icon,
+  suffix,
+  invalid,
+  disabled,
+  width,
+  style,
+  ...rest
+}: TextInputProps) {
+  const cls = ["nc-input", invalid && "nc-input--invalid", disabled && "nc-input--disabled"]
+    .filter(Boolean)
+    .join(" ")
   return (
     <label className={cls} style={{ width, ...style }}>
       {icon && <Icon name={icon} size={14} color="var(--text-muted)" />}
-      <input value={value} onChange={onChange} placeholder={placeholder} disabled={disabled} {...rest} />
-      {suffix && <span style={{ font: 'var(--type-small)', color: 'var(--text-muted)' }}>{suffix}</span>}
+      <input
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        disabled={disabled}
+        {...rest}
+      />
+      {suffix && (
+        <span style={{ font: "var(--type-small)", color: "var(--text-muted)" }}>{suffix}</span>
+      )}
     </label>
   )
 }

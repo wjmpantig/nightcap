@@ -11,7 +11,7 @@
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-linear: linear; /* progress + countdown rings only */
 
-  --transition-control: background-color var(--dur-fast) var(--ease-out),
-    border-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out),
-    box-shadow var(--dur-fast) var(--ease-out);
+  --transition-control:
+    background-color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
 }
