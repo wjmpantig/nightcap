@@ -1,3 +1,5 @@
+@use "@/design/styles/units" as *;
+
 .view {
   display: flex;
   flex-direction: column;
@@ -11,7 +13,7 @@
 }
 
 .addHint {
-  max-width: 280px;
+  max-width: #{em(280px, 12px)}; // measure, in em of --text-xs
   font: var(--type-small);
   color: var(--text-muted);
 }

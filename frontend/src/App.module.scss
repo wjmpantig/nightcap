@@ -1,3 +1,5 @@
+@use "@/design/styles/units" as *;
+
 // The window shell. nightcap runs in an ordinary resizable Wails window
 // (900x660, MinWidth 680) with native chrome, so .win fills it flat — the design
 // drew a frameless floating window with a border, a 14px radius and the overlay
@@ -50,7 +52,7 @@
   align-items: center;
   gap: var(--space-4);
   width: 100%;
-  height: 32px;
+  height: #{rem(32px)};
   padding: 0 var(--space-4);
   border: 0;
   border-radius: var(--radius-sm);
@@ -110,7 +112,7 @@
   padding: var(--space-8);
 
   &::-webkit-scrollbar {
-    width: 10px;
+    width: #{rem(10px)};
   }
 
   &::-webkit-scrollbar-thumb {

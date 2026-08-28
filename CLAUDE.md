@@ -110,7 +110,17 @@ go in the sibling `.module.scss` and come in as `styles.foo`. Two exceptions, bo
 only exist at runtime: a CSS custom property being *set* from a prop (`style={{ "--ring-frac": … }}`)
 and an SVG geometry attribute. Everything else is a class.
 
-`src/style.css` and `src/design/tokens/*.css` stay plain global CSS — they define the custom
+**Sizes are authored in px and emitted relative.** `rem()` and `em()` in
+`src/design/styles/_units.scss` convert at build time, so the source keeps the design rulebook's
+vocabulary (13px body, 44px rows, 216px sidebar) while the browser gets units that follow the user's
+font size. `@use "@/design/styles/units" as *;` at the top of any stylesheet that needs them.
+
+Wrap layout and type lengths in `rem()`. Use `em()` for a *measure* — a `max-width` on a run of text
+is a character count, so it scales with that text's own size. Four things stay in raw px, on purpose:
+a 1px hairline border (one device pixel; in rem it lands on a fraction and blurs), shadow offsets and
+blurs (optical, not layout), the 2px inset "you are here" bar, and the 2px slide in the fade keyframe.
+
+`src/style.scss` and `src/design/tokens/*.scss` stay global (not modules) — they define the custom
 properties and the `[data-theme="light"]` swap, which have to be global to cascade. `App.tsx` is the
 one component that is not a folder: it is the entry `main.tsx` imports. It still has an
 `App.module.scss`.

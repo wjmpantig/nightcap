@@ -1,10 +1,12 @@
+@use "@/design/styles/units" as *;
+
 // Tone is meaning, one hue per state — never decoration. The classes below are
 // the whole vocabulary; see design/README.md → Colour.
 .badge {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  height: 20px;
+  height: #{rem(20px)};
   padding: 0 var(--space-4);
   border: 1px solid transparent;
   border-radius: var(--radius-pill);
@@ -19,8 +21,8 @@
 }
 
 .dot {
-  width: 5px;
-  height: 5px;
+  width: #{rem(5px)};
+  height: #{rem(5px)};
   flex: 0 0 auto;
   border-radius: 50%;
   background: currentColor;

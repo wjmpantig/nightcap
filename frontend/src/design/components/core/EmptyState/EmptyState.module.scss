@@ -1,3 +1,5 @@
+@use "@/design/styles/units" as *;
+
 // Empty states are full sentences with a full stop, and an empty list in
 // nightcap is good news — this never celebrates.
 .empty {
@@ -19,7 +21,7 @@
 }
 
 .detail {
-  max-width: 380px;
+  max-width: #{em(380px, 12px)}; // measure, in em of --text-xs
   font: var(--type-small);
   color: var(--text-muted);
 }

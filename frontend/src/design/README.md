@@ -1,7 +1,7 @@
 # nightcap — design system
 
 Imported from the claude.ai/design project `nightcap Design System`, and now what the app actually
-renders: `src/App.tsx` is the shell over `kit/`, and `src/style.css` pulls in `styles.css` below.
+renders: `src/App.tsx` is the shell over `kit/`, and `src/style.scss` pulls in `styles.scss` below.
 The old `src/App.css` palette it replaced is gone.
 
 nightcap is a Windows desktop utility. Some apps take a power request (`powercfg /requests`) and
@@ -76,7 +76,7 @@ consumer app.
 
 **Colour.** Five base values come from the asset pack and are not negotiable: night `#0a0c10`, tile
 `#0f1420`, moonlight `#7fb3ff`, amber `#ffc27f`, paper `#e8eaee`. Everything else is derived from
-them in `oklch` (`tokens/colors.css`). On light backgrounds the pack's pair is used instead:
+them in `oklch` (`tokens/colors.scss`). On light backgrounds the pack's pair is used instead:
 `#2f6fd0` / `#b8791f`.
 
 Colour carries **meaning, one hue per state**, and is never used for decoration:
@@ -94,7 +94,7 @@ between amber and red so the palette stays a single warm/cool pair rather than g
 temperature. **Never a saturated pure red** — a red-alert UI would be dishonest about an app that
 closes VLC.
 
-**Type.** Three families, `tokens/typography.css`:
+**Type.** Three families, `tokens/typography.scss`:
 - **Space Grotesk** Medium, `-0.035em` — the wordmark and every heading. It comes from the lockup art,
   so the app's headings are literally set in the logo's typeface.
 - **IBM Plex Sans** — UI body at **13px**, small at 12px, labels at 11px/600/0.08em uppercase.
@@ -102,7 +102,9 @@ closes VLC.
 - **IBM Plex Mono** — every executable name, path, duration, countdown and config value. If a string
   came from the operating system, it is mono. This is the system's strongest typographic rule.
 
-**Spacing and layout.** 4px grid with a 6px half-step for control padding (`tokens/spacing.css`).
+**Spacing and layout.** 4px grid with a 6px half-step for control padding (`tokens/spacing.scss`).
+Every size below is *authored* in px and *emitted* in rem — `rem()` in `styles/_units.scss` converts
+at build time, so the numbers here are the real numbers at the default font size and scale from there.
 The window is a fixed 1000×640 shell: a 38px custom titlebar, a 216px sidebar on
 `--surface-sunken`, and one scrolling content column with 24px padding. List rows are 44px — dense
 but still a comfortable click target. Panels are 16px-padded, or unpadded when they hold rows.
@@ -209,7 +211,7 @@ humanist face that reads friendlier than this product behaves. The lockup art sp
 Grotesk Medium at -0.035em**, so that is the display face here, paired with **IBM Plex Sans/Mono**
 for UI and machine data.
 
-All three load from **Google Fonts** via `tokens/fonts.css` — no binaries are shipped. **nightcap
+All three load from **Google Fonts** via `tokens/fonts.scss` — no binaries are shipped. **nightcap
 must render offline, so self-hosting these three as woff2 with real `@font-face` rules is an
 outstanding task.** Space Grotesk in particular should be outlined in any exported lockup art, per
 the asset pack's own note.
@@ -220,8 +222,9 @@ the asset pack's own note.
 
 | Path | What it is |
 | --- | --- |
-| `styles.css` | The single entry point consumers link. `@import` list only. |
-| `tokens/` | `fonts.css`, `colors.css`, `typography.css`, `spacing.css`, `radius-shadow.css`, `motion.css`, `theme-light.css`, `base.css` |
+| `styles.scss` | The single entry point consumers link. `@use` list only. |
+| `tokens/` | `fonts`, `colors`, `typography`, `spacing`, `radius-shadow`, `motion`, `theme-light`, `base` — all `.scss` |
+| `styles/_units.scss` | `rem()` / `em()`: px in, relative units out |
 | `components/` | The React primitives — see below |
 | `kit/` | The nightcap window — the **live** app views that `src/App.tsx` renders, + its own README |
 

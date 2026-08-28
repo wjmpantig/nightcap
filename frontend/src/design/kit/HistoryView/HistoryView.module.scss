@@ -1,10 +1,12 @@
+@use "@/design/styles/units" as *;
+
 // Durations and timestamps are mono: they came from the machine.
 .idle {
   font-family: var(--font-mono);
 }
 
 .when {
-  min-width: 96px;
+  min-width: #{rem(96px)};
   font: var(--type-mono-sm);
   color: var(--text-muted);
   text-align: right;

@@ -1,3 +1,5 @@
+@use "@/design/styles/units" as *;
+
 // --ring-size is the box, --ring-tone the stroke. The arc itself is SVG geometry
 // (dasharray/dashoffset) and stays on the element.
 //
@@ -31,7 +33,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1px;
+  gap: #{rem(1px)};
 }
 
 .secs {

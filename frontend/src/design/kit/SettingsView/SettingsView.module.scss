@@ -1,3 +1,5 @@
+@use "@/design/styles/units" as *;
+
 .view {
   display: flex;
   flex-direction: column;
@@ -24,7 +26,7 @@
 }
 
 .settingHint {
-  max-width: 440px;
+  max-width: #{em(440px, 12px)}; // measure, in em of --text-xs
   margin-top: var(--space-1);
   font: var(--type-small);
   color: var(--text-muted);

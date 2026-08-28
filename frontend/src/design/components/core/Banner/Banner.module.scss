@@ -1,3 +1,5 @@
+@use "@/design/styles/units" as *;
+
 // --banner-fg is the tone's hue; the icon and the title both take it, the body
 // text stays secondary so the colour marks the state and not the sentence.
 .banner {
@@ -28,7 +30,7 @@
 }
 
 .icon {
-  margin-top: 1px;
+  margin-top: #{rem(1px)};
   color: var(--banner-fg);
 }
 

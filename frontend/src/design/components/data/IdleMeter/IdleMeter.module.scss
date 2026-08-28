@@ -1,10 +1,12 @@
+@use "@/design/styles/units" as *;
+
 // The bar turning amber past 75% is the only element in nightcap that changes
 // colour on its own. --fill is the width; the .near class is the threshold.
 .meter {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  min-width: 180px;
+  min-width: #{rem(180px)};
 }
 
 .head {
@@ -32,7 +34,7 @@
 }
 
 .track {
-  height: 3px;
+  height: #{rem(3px)};
   background: var(--night-700);
   border-radius: var(--radius-pill);
   overflow: hidden;

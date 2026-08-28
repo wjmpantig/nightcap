@@ -1,3 +1,5 @@
+@use "@/design/styles/units" as *;
+
 // The only blur in the product, and one of only two things that cast a real
 // shadow. Both are deliberate: this is the single destructive moment in nightcap
 // and it should feel like it is in front of everything else.
@@ -14,7 +16,7 @@
 }
 
 .dialog {
-  width: 520px;
+  width: #{rem(520px)};
   padding: var(--space-8);
 }
 

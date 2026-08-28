@@ -1,3 +1,5 @@
+@use "@/design/styles/units" as *;
+
 // The native input is kept for keyboard and screen readers and hidden visually;
 // the box next to it is what you see. 3px corners — the tightest radius in the
 // product, and the only place it is used.
@@ -36,9 +38,9 @@
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
-  width: 16px;
-  height: 16px;
-  margin-top: 1px;
+  width: #{rem(16px)};
+  height: #{rem(16px)};
+  margin-top: #{rem(1px)};
   background: var(--surface-sunken);
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-xs);
