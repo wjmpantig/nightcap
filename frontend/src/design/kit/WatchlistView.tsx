@@ -1,17 +1,28 @@
 import { useState } from 'react'
-import { Panel } from '../components/core/Panel.jsx'
-import { SectionHeader } from '../components/core/SectionHeader.jsx'
-import { Button } from '../components/core/Button.jsx'
-import { Badge } from '../components/core/Badge.jsx'
-import { EmptyState } from '../components/core/EmptyState.jsx'
-import { NumberField } from '../components/forms/NumberField.jsx'
-import { Select } from '../components/forms/Select.jsx'
-import { TextInput } from '../components/forms/TextInput.jsx'
-import { ListRow } from '../components/data/ListRow.jsx'
-import { ProcessName } from '../components/data/ProcessName.jsx'
-import { SNOOZE_OPTIONS, humanRemaining } from './mock.js'
+import { Panel } from '../components/core/Panel'
+import { SectionHeader } from '../components/core/SectionHeader'
+import { Button } from '../components/core/Button'
+import { Badge } from '../components/core/Badge'
+import { EmptyState } from '../components/core/EmptyState'
+import { NumberField } from '../components/forms/NumberField'
+import { Select } from '../components/forms/Select'
+import { TextInput } from '../components/forms/TextInput'
+import { ListRow } from '../components/data/ListRow'
+import { ProcessName } from '../components/data/ProcessName'
+import { SNOOZE_OPTIONS, humanRemaining } from './mock'
 
-export function WatchlistView({ entries, defaultTimeout, onSetTimeout, onSnooze, onRemove, onAdd }) {
+import type { WatchEntry } from './mock'
+
+interface WatchlistViewProps {
+  entries: WatchEntry[]
+  defaultTimeout: number
+  onSetTimeout: (exe: string, minutes: number) => void
+  onSnooze: (exe: string, minutes: number) => void
+  onRemove: (exe: string) => void
+  onAdd: (exe: string) => void
+}
+
+export function WatchlistView({ entries, defaultTimeout, onSetTimeout, onSnooze, onRemove, onAdd }: WatchlistViewProps) {
   const [draft, setDraft] = useState('')
   const now = Date.now()
   return (

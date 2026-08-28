@@ -1,9 +1,26 @@
-import { Mark } from '../components/brand/Mark.jsx'
-import { Icon } from '../components/core/Icon.jsx'
-import { Badge } from '../components/core/Badge.jsx'
-import { mmss } from './mock.js'
+import { Mark } from '../components/brand/Mark'
+import { Icon } from '../components/core/Icon'
+import { Badge } from '../components/core/Badge'
+import type { ReactNode } from 'react'
+import { mmss } from './mock'
 
-function TrayItem({ icon, children, meta, onClick, danger }) {
+interface TrayMenuProps {
+  paused: boolean
+  idleSecs: number
+  watching: number
+  onTogglePause: () => void
+  onOpen: () => void
+}
+
+interface TrayItemProps {
+  icon: string
+  children: ReactNode
+  meta?: ReactNode
+  onClick?: () => void
+  danger?: boolean
+}
+
+function TrayItem({ icon, children, meta, onClick, danger }: TrayItemProps) {
   return (
     <button onClick={onClick} style={{display:'flex',alignItems:'center',gap:'var(--space-4)',
       width:'100%',height:30,padding:'0 var(--space-5)',border:0,background:'transparent',
@@ -18,7 +35,7 @@ function TrayItem({ icon, children, meta, onClick, danger }) {
   )
 }
 
-export function TrayMenu({ paused, idleSecs, watching, onTogglePause, onOpen }) {
+export function TrayMenu({ paused, idleSecs, watching, onTogglePause, onOpen }: TrayMenuProps) {
   return (
     <div style={{position:'absolute',right:14,bottom:14,zIndex:30,width:258,padding:'var(--space-3) 0',
       background:'var(--surface-raised)',border:'1px solid var(--line-strong)',

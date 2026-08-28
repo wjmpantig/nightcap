@@ -1,13 +1,27 @@
-import { Panel } from '../components/core/Panel.jsx'
-import { SectionHeader } from '../components/core/SectionHeader.jsx'
-import { Banner } from '../components/core/Banner.jsx'
-import { Button } from '../components/core/Button.jsx'
-import { Badge } from '../components/core/Badge.jsx'
-import { NumberField } from '../components/forms/NumberField.jsx'
-import { Checkbox } from '../components/forms/Checkbox.jsx'
-import { Switch } from '../components/forms/Switch.jsx'
+import type { ReactNode } from 'react'
+import { Panel } from '../components/core/Panel'
+import { SectionHeader } from '../components/core/SectionHeader'
+import { Banner } from '../components/core/Banner'
+import { Button } from '../components/core/Button'
+import { Badge } from '../components/core/Badge'
+import { NumberField } from '../components/forms/NumberField'
+import { Checkbox } from '../components/forms/Checkbox'
+import { Switch } from '../components/forms/Switch'
 
-function Setting({ label, hint, children }) {
+import type { KitConfig } from './mock'
+
+interface SettingsViewProps {
+  cfg: KitConfig
+  onChange: (patch: Partial<KitConfig>) => void
+}
+
+interface SettingProps {
+  label: ReactNode
+  hint?: ReactNode
+  children: ReactNode
+}
+
+function Setting({ label, hint, children }: SettingProps) {
   return (
     <div style={{display:'flex',alignItems:'flex-start',gap:'var(--space-6)',padding:'var(--space-5) 0',
       borderTop:'1px solid var(--line)'}}>
@@ -20,7 +34,7 @@ function Setting({ label, hint, children }) {
   )
 }
 
-export function SettingsView({ cfg, onChange }) {
+export function SettingsView({ cfg, onChange }: SettingsViewProps) {
   return (
     <div className="fade-in" style={{display:'flex',flexDirection:'column',gap:'var(--gap-section)'}}>
       <Banner tone="info" title="Running elevated"

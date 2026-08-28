@@ -1,13 +1,20 @@
-import { Panel } from '../components/core/Panel.jsx'
-import { SectionHeader } from '../components/core/SectionHeader.jsx'
-import { Button } from '../components/core/Button.jsx'
-import { Badge } from '../components/core/Badge.jsx'
-import { EmptyState } from '../components/core/EmptyState.jsx'
-import { ListRow } from '../components/data/ListRow.jsx'
-import { ProcessName } from '../components/data/ProcessName.jsx'
-import { mmss, whenKilled } from './mock.js'
+import { Panel } from '../components/core/Panel'
+import { SectionHeader } from '../components/core/SectionHeader'
+import { Button } from '../components/core/Button'
+import { Badge } from '../components/core/Badge'
+import { EmptyState } from '../components/core/EmptyState'
+import { ListRow } from '../components/data/ListRow'
+import { ProcessName } from '../components/data/ProcessName'
+import { mmss, whenKilled } from './mock'
 
-export function HistoryView({ history, onClear }) {
+import type { KillRecord } from './mock'
+
+interface HistoryViewProps {
+  history: KillRecord[]
+  onClear: () => void
+}
+
+export function HistoryView({ history, onClear }: HistoryViewProps) {
   return (
     <div className="fade-in">
       <Panel pad={false}>

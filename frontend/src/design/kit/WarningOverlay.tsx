@@ -1,10 +1,20 @@
-import { Panel } from '../components/core/Panel.jsx'
-import { Button } from '../components/core/Button.jsx'
-import { Badge } from '../components/core/Badge.jsx'
-import { CountdownRing } from '../components/data/CountdownRing.jsx'
-import { SNOOZE_OPTIONS, mmss } from './mock.js'
+import { Panel } from '../components/core/Panel'
+import { Button } from '../components/core/Button'
+import { Badge } from '../components/core/Badge'
+import { CountdownRing } from '../components/data/CountdownRing'
+import { SNOOZE_OPTIONS, mmss } from './mock'
 
-export function WarningOverlay({ pending, remaining, total, idleSecs, onSnooze, onCancel }) {
+interface WarningOverlayProps {
+  /** Executable names about to be closed. */
+  pending: string[]
+  remaining: number
+  total: number
+  idleSecs: number
+  onSnooze: (minutes: number) => void
+  onCancel: () => void
+}
+
+export function WarningOverlay({ pending, remaining, total, idleSecs, onSnooze, onCancel }: WarningOverlayProps) {
   return (
     <div style={{position:'absolute',inset:0,zIndex:20,display:'flex',alignItems:'center',
       justifyContent:'center',background:'var(--surface-overlay)',backdropFilter:'blur(6px)',

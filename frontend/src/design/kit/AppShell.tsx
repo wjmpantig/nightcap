@@ -1,22 +1,31 @@
 import { useEffect, useState } from 'react'
-import { Lockup } from '../components/brand/Lockup.jsx'
-import { Mark } from '../components/brand/Mark.jsx'
-import { Icon } from '../components/core/Icon.jsx'
-import { IconButton } from '../components/core/IconButton.jsx'
-import { Badge } from '../components/core/Badge.jsx'
-import { Button } from '../components/core/Button.jsx'
-import { Switch } from '../components/forms/Switch.jsx'
-import { IdleMeter } from '../components/data/IdleMeter.jsx'
-import { AwakeView } from './AwakeView.jsx'
-import { WatchlistView } from './WatchlistView.jsx'
-import { HistoryView } from './HistoryView.jsx'
-import { SettingsView } from './SettingsView.jsx'
-import { WarningOverlay } from './WarningOverlay.jsx'
-import { TrayMenu } from './TrayMenu.jsx'
-import { REQUESTS, WATCHLIST, HISTORY } from './mock.js'
+import { Lockup } from '../components/brand/Lockup'
+import { Mark } from '../components/brand/Mark'
+import { Icon } from '../components/core/Icon'
+import { IconButton } from '../components/core/IconButton'
+import { Badge } from '../components/core/Badge'
+import { Button } from '../components/core/Button'
+import { Switch } from '../components/forms/Switch'
+import { IdleMeter } from '../components/data/IdleMeter'
+import { AwakeView } from './AwakeView'
+import { WatchlistView } from './WatchlistView'
+import { HistoryView } from './HistoryView'
+import { SettingsView } from './SettingsView'
+import { WarningOverlay } from './WarningOverlay'
+import { TrayMenu } from './TrayMenu'
+import type { KitConfig } from './mock'
+import { REQUESTS, WATCHLIST, HISTORY } from './mock'
 import './kit.css'
 
-const NAV = [
+type ViewId = 'awake' | 'watchlist' | 'history' | 'settings'
+
+interface Pending {
+  apps: string[]
+  remaining: number
+  total: number
+}
+
+const NAV: { id: ViewId; label: string; icon: string }[] = [
   {id:'awake', label:'Keeping awake', icon:'zap'},
   {id:'watchlist', label:'Watchlist', icon:'eye'},
   {id:'history', label:'Closed', icon:'power'},
@@ -24,14 +33,14 @@ const NAV = [
 ]
 
 export function AppShell() {
-  const [view, setView] = useState('awake')
+  const [view, setView] = useState<ViewId>('awake')
   const [requests] = useState(REQUESTS)
   const [entries, setEntries] = useState(WATCHLIST)
   const [history, setHistory] = useState(HISTORY)
-  const [cfg, setCfg] = useState({defaultTimeoutMinutes:15, warningSeconds:30, autostart:true, paused:false})
+  const [cfg, setCfg] = useState<KitConfig>({defaultTimeoutMinutes:15, warningSeconds:30, autostart:true, paused:false})
   const [idleSecs, setIdle] = useState(1324)
   const [tray, setTray] = useState(false)
-  const [pending, setPending] = useState(null)
+  const [pending, setPending] = useState<Pending | null>(null)
 
   useEffect(() => {
     const t = setInterval(() => setIdle(s => (cfg.paused ? s : s + 1)), 1000)
@@ -47,14 +56,14 @@ export function AppShell() {
   const watched = new Set(entries.map(e => e.exe))
   const armed = entries.filter(e => !e.snoozedUntil || new Date(e.snoozedUntil) < new Date()).length
 
-  const watch = exe => setEntries(es => es.some(e => e.exe === exe) ? es : [...es, {exe, timeoutMinutes:0, snoozedUntil:''}])
-  const setTimeoutFor = (exe, m) => setEntries(es => es.map(e => e.exe === exe ? {...e, timeoutMinutes:m} : e))
-  const snooze = (exe, mins) => setEntries(es => es.map(e => e.exe === exe
+  const watch = (exe: string) => setEntries(es => es.some(e => e.exe === exe) ? es : [...es, {exe, timeoutMinutes:0, snoozedUntil:''}])
+  const setTimeoutFor = (exe: string, m: number) => setEntries(es => es.map(e => e.exe === exe ? {...e, timeoutMinutes:m} : e))
+  const snooze = (exe: string, mins: number) => setEntries(es => es.map(e => e.exe === exe
     ? {...e, snoozedUntil: mins === 0 ? '' : new Date(Date.now() + (mins < 0 ? 3.15e10 : mins*60e3)).toISOString()} : e))
-  const remove = exe => setEntries(es => es.filter(e => e.exe !== exe))
+  const remove = (exe: string) => setEntries(es => es.filter(e => e.exe !== exe))
 
   const fire = () => setPending({apps:['vlc.exe'], remaining: cfg.warningSeconds, total: cfg.warningSeconds})
-  const counts = {awake: requests.filter(r => r.exe !== '').length, watchlist: entries.length, history: history.length}
+  const counts: Partial<Record<ViewId, number>> = {awake: requests.filter(r => r.exe !== '').length, watchlist: entries.length, history: history.length}
 
   return (
     <div className="win">

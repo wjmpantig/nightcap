@@ -1,12 +1,20 @@
-import { Panel } from '../components/core/Panel.jsx'
-import { SectionHeader } from '../components/core/SectionHeader.jsx'
-import { Button } from '../components/core/Button.jsx'
-import { Badge } from '../components/core/Badge.jsx'
-import { EmptyState } from '../components/core/EmptyState.jsx'
-import { ListRow } from '../components/data/ListRow.jsx'
-import { ProcessName } from '../components/data/ProcessName.jsx'
+import { Panel } from '../components/core/Panel'
+import { SectionHeader } from '../components/core/SectionHeader'
+import { Button } from '../components/core/Button'
+import { Badge } from '../components/core/Badge'
+import { EmptyState } from '../components/core/EmptyState'
+import { ListRow } from '../components/data/ListRow'
+import { ProcessName } from '../components/data/ProcessName'
 
-export function AwakeView({ requests, watched, onWatch }) {
+import type { Request } from './mock'
+
+interface AwakeViewProps {
+  requests: Request[]
+  watched: Set<string>
+  onWatch: (exe: string) => void
+}
+
+export function AwakeView({ requests, watched, onWatch }: AwakeViewProps) {
   const killable = requests.filter(r => r.exe !== '')
   const drivers = requests.filter(r => r.exe === '')
   return (
