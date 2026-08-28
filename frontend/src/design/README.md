@@ -170,25 +170,31 @@ Tray rules from the pack, kept: swap white/black art on `SystemUsesLightTheme` /
 the sunk-moon geometry; minimum 16px in the tray, 20px anywhere else; clear space = 0.25 × mark
 height.
 
-**UI icons — substitution, flagged.** The codebase ships **no icon set at all** (the shipped UI uses
-plain text buttons). So the system standardises on **Lucide** (24px grid, 2px stroke, rounded caps)
-from CDN — its stroke weight and squared-off geometry sit comfortably next to the mark's flat shapes,
-and it is close to Windows' own Fluent line style without pretending to be it. **This was the design
-system's choice, not the brand's: swap it if you have a preference.**
+**UI icons — substitution, flagged.** The codebase shipped **no icon set at all** (the old UI used
+plain text buttons). So the system standardises on **Lucide** (24px grid, 2px stroke, rounded caps) —
+its stroke weight and squared-off geometry sit comfortably next to the mark's flat shapes, and it is
+close to Windows' own Fluent line style without pretending to be it. **This was the design system's
+choice, not the brand's: swap it if you have a preference.**
 
-Lucide is loaded through one component, `Icon`, and nowhere else. `Icon` injects the Lucide UMD
-script once, reads the icon geometry out of `window.lucide`, and renders a **real inline `<svg>`
-stroked in `currentColor`** — so an icon inside a danger button turns ember for free. Consequences:
-icons are never hand-drawn, never PNG, never a CSS-mask image, and never coloured directly. 14px in
-dense rows, 16px default, 20px in headers. **The glyph source lives in exactly one file — swap `SRC`
-in `Icon.tsx` and the whole system changes icon set.** Like the fonts, this is a CDN dependency:
-nightcap is an offline desktop app, so vendoring Lucide locally and pointing `Icon` at it is a real
-outstanding task.
+Lucide reaches the UI through one component, `Icon`, and nowhere else. It renders the `lucide-react`
+component for the requested name, stroked in `currentColor` — so an icon inside a danger button turns
+ember for free. Consequences: icons are never hand-drawn, never PNG, never a CSS-mask image, and
+never coloured directly. 14px in dense rows, 16px default, 20px in headers.
 
-The working vocabulary: `zap` (holding a lock), `eye` / `eye-off` (watch), `alarm-clock` (snooze),
-`power` (closed by nightcap), `lock` (driver/service), `pause` / `play`, `settings`, `shield-check`
-(elevated), `triangle-alert` / `shield-alert`, `clock`, `refresh-cw`, `trash-2`, `plus`, `x`,
-`git-fork` (shared runtime), `folder-open`, `log-out`.
+**The glyph source is exactly one file: the `ICONS` registry at the top of `Icon.tsx`.** Icons are
+imported by name and bundled, never fetched — nightcap runs offline and elevated in a tray, and the
+design system's first cut fetched lucide's UMD build from a CDN, which meant no network, no icons.
+Naming the set we use rather than importing all of Lucide is also what lets the bundler drop the
+~1600 glyphs we don't (the 25 we do cost ~2.4 kB gzipped). `IconName` is derived from that registry,
+so **adding an icon to the UI means registering it there first** — an unregistered name is a compile
+error, not a blank box, and the error surfaces at the call site through whichever wrapper forwards
+the prop.
+
+The working vocabulary, all registered: `zap` (holding a lock), `eye` / `eye-off` (watch),
+`alarm-clock` (snooze), `power` (closed by nightcap), `lock` (driver/service), `pause` / `play`,
+`settings`, `maximize` (fullscreen), `triangle-alert` / `shield-alert` / `info` (banner tones),
+`clock`, `refresh-cw`, `eraser`, `trash-2`, `plus`, `x`, `check`, `chevron-down`, `moon`,
+`git-fork` (shared runtime), `app-window`, `log-out`.
 
 **Emoji and unicode-as-icon: never.** Not in the UI, not in copy, not in status strings. The one
 non-alphanumeric character with a job is the ellipsis in "Snooze…". Status is communicated by a 5px
