@@ -94,7 +94,15 @@ Every component and view is a folder. No exceptions in `src/design/`:
   [Component].test.tsx      only if there is logic worth pinning
 ```
 
-Import a component by its folder (`from "../core/Button"`), never by the inner file.
+Import a component by its folder (`from "@/design/components/core/Button"`), never by the inner file.
+
+**`@/` means `frontend/src/`.** Anything outside the current directory is imported through the alias;
+only same-directory siblings (`./Button.module.scss`) stay relative, so no import ever starts with
+`../`. The alias is declared twice and the two have to agree — `paths` in `tsconfig.json` for types,
+`resolve.alias` in `vite.config.ts` for the build.
+
+Shared helpers live in `src/utils/`. `cx()` is the className merge (a thin wrap around `clsx`, so the
+dependency is named in one file); boundary types are `src/types.ts` and formatters `src/format.ts`.
 
 **No inline styles.** No `style={{...}}` and no injected `const CSS` string with a
 `document.createElement('style')` — several components were written that way and none are now. Styles

@@ -26,7 +26,7 @@ import {
   Zap,
 } from "lucide-react"
 import type { SVGAttributes } from "react"
-import { cx } from "../../../cx"
+import { cx } from "@/utils/cx"
 import styles from "./Icon.module.scss"
 
 // The glyph source lives in exactly one file: this registry. nightcap is an

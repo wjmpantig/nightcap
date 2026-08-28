@@ -1,10 +1,10 @@
 import type { ReactNode } from "react"
-import type { Settings } from "../../types"
-import { Panel } from "../components/core/Panel"
-import { SectionHeader } from "../components/core/SectionHeader"
-import { Checkbox } from "../components/forms/Checkbox"
-import { NumberField } from "../components/forms/NumberField"
-import { Switch } from "../components/forms/Switch"
+import type { Settings } from "@/types"
+import { Panel } from "@/design/components/core/Panel"
+import { SectionHeader } from "@/design/components/core/SectionHeader"
+import { Checkbox } from "@/design/components/forms/Checkbox"
+import { NumberField } from "@/design/components/forms/NumberField"
+import { Switch } from "@/design/components/forms/Switch"
 
 interface SettingsViewProps {
   cfg: Settings

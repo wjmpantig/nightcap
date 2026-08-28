@@ -2,7 +2,7 @@
 // The types and the formatters live in src/types.ts and src/format.ts — the app
 // and the kit share them.
 
-import type { KillRecord, Request, WatchEntry } from "../../types"
+import type { KillRecord, Request, WatchEntry } from "@/types"
 
 export const REQUESTS: Request[] = [
   {

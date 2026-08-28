@@ -1,7 +1,7 @@
 import type { HTMLAttributes, ReactNode } from "react"
-import { cx } from "../../../cx"
-import type { IconName } from "../Icon"
-import { Icon } from "../Icon"
+import { cx } from "@/utils/cx"
+import type { IconName } from "@/design/components/core/Icon"
+import { Icon } from "@/design/components/core/Icon"
 import styles from "./EmptyState.module.scss"
 
 export interface EmptyStateProps extends Omit<HTMLAttributes<HTMLDivElement>, "title"> {

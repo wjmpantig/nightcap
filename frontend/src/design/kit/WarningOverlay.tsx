@@ -1,8 +1,8 @@
-import { mmss, SNOOZE_OPTIONS } from "../../format"
-import { Badge } from "../components/core/Badge"
-import { Button } from "../components/core/Button"
-import { Panel } from "../components/core/Panel"
-import { CountdownRing } from "../components/data/CountdownRing"
+import { mmss, SNOOZE_OPTIONS } from "@/format"
+import { Badge } from "@/design/components/core/Badge"
+import { Button } from "@/design/components/core/Button"
+import { Panel } from "@/design/components/core/Panel"
+import { CountdownRing } from "@/design/components/data/CountdownRing"
 
 interface WarningOverlayProps {
   /** Executable names about to be closed. */

@@ -1,5 +1,5 @@
 import type { HTMLAttributes } from "react"
-import { cx } from "../../../cx"
+import { cx } from "@/utils/cx"
 import styles from "./Panel.module.scss"
 
 export interface PanelProps extends HTMLAttributes<HTMLElement> {

@@ -1,6 +1,6 @@
 import type { InputHTMLAttributes, ReactNode } from "react"
-import type { IconName } from "../core/Icon"
-import { Icon } from "../core/Icon"
+import type { IconName } from "@/design/components/core/Icon"
+import { Icon } from "@/design/components/core/Icon"
 
 export interface TextInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "width"> {
   /** Lucide icon inside the field's left edge. */

@@ -1,5 +1,5 @@
 import type { HTMLAttributes } from "react"
-import { Icon } from "../core/Icon"
+import { Icon } from "@/design/components/core/Icon"
 
 /**
  * A process identity cell: mono executable name plus the owner chain nightcap resolved for it.

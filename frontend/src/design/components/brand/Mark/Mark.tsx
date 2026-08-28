@@ -1,6 +1,6 @@
 import type { SVGAttributes } from "react"
 import { useId } from "react"
-import { cx } from "../../../cx"
+import { cx } from "@/utils/cx"
 import styles from "./Mark.module.scss"
 
 /**

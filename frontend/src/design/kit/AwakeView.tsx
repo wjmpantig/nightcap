@@ -1,13 +1,13 @@
-import { targetsOf } from "../../format"
-import type { Request } from "../../types"
-import { Badge } from "../components/core/Badge"
-import { Banner } from "../components/core/Banner"
-import { Button } from "../components/core/Button"
-import { EmptyState } from "../components/core/EmptyState"
-import { Panel } from "../components/core/Panel"
-import { SectionHeader } from "../components/core/SectionHeader"
-import { ListRow } from "../components/data/ListRow"
-import { ProcessName } from "../components/data/ProcessName"
+import { targetsOf } from "@/format"
+import type { Request } from "@/types"
+import { Badge } from "@/design/components/core/Badge"
+import { Banner } from "@/design/components/core/Banner"
+import { Button } from "@/design/components/core/Button"
+import { EmptyState } from "@/design/components/core/EmptyState"
+import { Panel } from "@/design/components/core/Panel"
+import { SectionHeader } from "@/design/components/core/SectionHeader"
+import { ListRow } from "@/design/components/data/ListRow"
+import { ProcessName } from "@/design/components/data/ProcessName"
 
 interface AwakeViewProps {
   requests: Request[]

@@ -1,5 +1,5 @@
 import type { InputHTMLAttributes, ReactNode } from "react"
-import { Icon } from "../core/Icon"
+import { Icon } from "@/design/components/core/Icon"
 
 export interface CheckboxProps extends InputHTMLAttributes<HTMLInputElement> {
   label: ReactNode

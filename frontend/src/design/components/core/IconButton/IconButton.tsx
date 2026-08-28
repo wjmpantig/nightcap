@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes, CSSProperties } from "react"
-import { cx } from "../../../cx"
-import type { IconName } from "../Icon"
-import { Icon } from "../Icon"
+import { cx } from "@/utils/cx"
+import type { IconName } from "@/design/components/core/Icon"
+import { Icon } from "@/design/components/core/Icon"
 import styles from "./IconButton.module.scss"
 
 export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {

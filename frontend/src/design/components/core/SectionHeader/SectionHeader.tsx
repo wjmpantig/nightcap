@@ -1,5 +1,5 @@
 import type { HTMLAttributes, ReactNode } from "react"
-import { cx } from "../../../cx"
+import { cx } from "@/utils/cx"
 import styles from "./SectionHeader.module.scss"
 
 export interface SectionHeaderProps extends HTMLAttributes<HTMLElement> {
