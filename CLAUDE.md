@@ -57,6 +57,14 @@ adding build tags or mocking frameworks.
   an unvalidated PPID can name an unrelated process and misattribute a wake lock.
 - **Driver and service requests have no `Exe`.** They're displayed but unkillable, and `decide()`
   skips them.
+- **Anything that must react to a config change hooks `store.watch()`, not the caller.** `update()`
+  in `config.go` is the only way the config ever changes, so the tray follows the paused state from
+  there and sees it however it was set — window switch, settings view, tray menu. Adding a second
+  notifier at a call site means the next call site forgets. The hook fires outside the lock (so it
+  cannot deadlock a write by reading the config back) and with the *sanitised* config.
+- **Tray art is never scaled.** `build/windows/tray-{active,inactive}.ico` are packed from the brand
+  pack's hand-drawn per-size PNGs by `make-tray-ico.py`; at 16–24px a 1px gap opens between the disc
+  and the horizon that a downscaled 48px image loses. Re-run that script if the art changes.
 - **Autostart must stay a scheduled task.** An `HKCU\...\Run` key cannot start an elevated app and
   fails silently at login.
 
