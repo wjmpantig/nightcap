@@ -1,0 +1,2 @@
+Keeps this directory present for the //go:embed in main.go.
+Real contents are produced by "wails build" and are gitignored.
