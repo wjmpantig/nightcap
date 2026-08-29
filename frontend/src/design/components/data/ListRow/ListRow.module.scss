@@ -1,6 +1,15 @@
+@use "@/design/styles/units" as *;
+
 // One hairline between rows, no zebra striping, and no border above the first.
+//
+// The row wraps. A shared runtime resolves to one Watch button per owning app —
+// powercfg never says which one holds the lock, so nightcap offers all of them —
+// and five buttons plus a process name do not fit a 680px window on one line.
+// Without wrapping, .actions cannot shrink below its buttons and .body gets
+// crushed to a column two words wide.
 .row {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--space-5);
   min-height: var(--row-height);
@@ -27,20 +36,30 @@
   opacity: 0.55;
 }
 
+// The floor is what keeps the process name readable: below it the actions wrap
+// to their own line instead of squeezing the one thing the row is identifying.
 .body {
   flex: 1;
-  min-width: 0;
+  min-width: rem(220px);
 }
 
+// Metas are short by design (a timestamp, "after 22m 04s idle"), but AwakeView
+// puts the app's own stated reason here and those are prose. Ellipsis rather
+// than nowrap-at-any-cost, so a long one cannot starve the row either.
 .meta {
+  min-width: 0;
   font: var(--type-small);
   color: var(--text-muted);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .actions {
   margin-left: auto;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
+  justify-content: flex-end;
   gap: var(--space-4);
 }
