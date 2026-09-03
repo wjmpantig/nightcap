@@ -1,14 +1,15 @@
 # nightcap
 
-Some apps hold a Windows power request and forget to let go, so the PC never sleeps. nightcap shows
+Some apps hold a power request and forget to let go, so the machine never sleeps. nightcap shows
 you who's doing it, lets you put the repeat offenders on a watchlist, and force-closes them once the
 machine has genuinely been idle long enough.
 
-Windows only for now. Go + Wails v2 + React.
+Windows and macOS. Go + Wails v2 + React.
 
 ## What it does
 
-1. Polls `powercfg /requests` every 5 seconds to see what is holding the machine awake.
+1. Polls `powercfg /requests` (Windows) or `pmset -g assertions` (macOS) every 5 seconds to see
+   what is holding the machine awake.
 2. Tracks how long since your last keyboard or mouse input.
 3. If a **watchlisted** app is holding a wake lock and you've been idle past its timeout, it warns
    you with a countdown, then terminates the process.
@@ -17,7 +18,7 @@ A fullscreen app normally gets a pass on the idle timer — but not if it's on t
 Watchlisting something is an explicit "no exceptions", otherwise a media player stuck on a paused
 video could never be caught, which is the whole reason this exists.
 
-## Requires administrator
+## Requires administrator (Windows only)
 
 `powercfg /requests` only reports the full picture when elevated, so nightcap ships with a
 `requireAdministrator` manifest and prompts for UAC on launch. Run unelevated and it tells you it
@@ -25,6 +26,9 @@ needs admin rather than pretending nothing is keeping you awake.
 
 "Start nightcap at login" registers a scheduled task with `/rl HIGHEST` rather than a `Run`
 registry key — a `Run` entry cannot launch an elevated app and fails silently.
+
+On macOS none of this applies: `pmset` needs no privileges, and autostart is a plain LaunchAgent
+in `~/Library/LaunchAgents`.
 
 ## Settings
 
@@ -40,8 +44,9 @@ The **Closed by nightcap** section lists what got killed, when, how long you'd b
 reason the app gave for holding the lock — so you can find out what died overnight. It keeps the
 last 200 kills and has a Clear button.
 
-Config lives at `%APPDATA%\nightcap\config.json`. It's plain JSON and safe to hand-edit; anything
-missing or nonsensical falls back to defaults rather than crashing.
+Config lives at `%APPDATA%\nightcap\config.json` (Windows) or
+`~/Library/Application Support/nightcap/config.json` (macOS). It's plain JSON and safe to
+hand-edit; anything missing or nonsensical falls back to defaults rather than crashing.
 
 ## Shared runtimes
 
@@ -60,27 +65,33 @@ cannot tell which one holds the lock, and says so by listing every owner. Watchl
 means "if this app is running a webview and some webview is holding a wake lock, close it".
 
 The same treatment applies to `dllhost.exe`, `rundll32.exe`, `java.exe`, `node.exe`, `python.exe`
-and friends. Parent links are validated against process creation times, so a recycled PID cannot
-make nightcap blame the wrong app.
+and friends — and to their macOS spellings (`node`, `python3`, the shells). Parent links are
+validated against process creation times, so a recycled PID cannot make nightcap blame the wrong
+app.
+
+macOS is friendlier here: `pmset` reports the holder's PID, and when a daemon holds an assertion
+on an app's behalf (coreaudiod does, for anything playing audio) a "Created for PID" line names
+the app itself, so nightcap attributes the lock to the real owner directly.
 
 ## Safety
 
-- A short denylist (`lsass.exe`, `csrss.exe`, `winlogon.exe`, …) is never terminated. nightcap runs
-  elevated and the watchlist is free text, so this guard is not optional.
+- A short denylist (`lsass.exe`, `csrss.exe`, `winlogon.exe` on Windows; `launchd`, `WindowServer`,
+  `watchdogd` on macOS, …) is never terminated. The watchlist is free text, so this guard is not
+  optional.
 - Wake locks held by **drivers and services** are shown but can't be closed — there's no process to
   terminate.
 - Termination covers the process **and its descendants**, so an app's orphaned children can't keep
   holding the lock it was closed for. The walk stops at protected processes.
-- Termination is a hard `TerminateProcess`. Unsaved work in a watched app is lost; that's what the
-  warning countdown and snooze are for.
+- Termination is a hard `TerminateProcess` / `SIGKILL`. Unsaved work in a watched app is lost;
+  that's what the warning countdown and snooze are for.
 
 ## Development
 
 ```sh
 go install github.com/wailsapp/wails/v2/cmd/wails@latest
 
-wails dev      # run from an ELEVATED terminal, or you'll only see the "needs admin" state
-wails build    # produces build/bin/nightcap.exe
+wails dev      # on Windows: run from an ELEVATED terminal, or you'll only see the "needs admin" state
+wails build    # produces build/bin/nightcap.exe (Windows) or build/bin/nightcap.app (macOS)
 go test ./...
 ```
 
@@ -89,19 +100,20 @@ go test ./...
 | File | Purpose |
 | --- | --- |
 | `watcher.go` | The loop, and `decide()` — the kill rules, pure and platform-free |
-| `power.go` | `powercfg /requests` parser (no syscalls, so it's testable) |
-| `power_windows.go` | Runs powercfg, detects the unprivileged case |
-| `idle_windows.go` | `GetLastInputInfo`, fullscreen detection |
+| `power.go` / `pmset.go` | Output parsers for powercfg / pmset (no syscalls, so they're testable) |
+| `power_windows.go` / `power_darwin.go` | Runs the power-request query, builds the snapshot |
+| `idle_windows.go` / `idle_darwin.go` | Last-input time and fullscreen detection |
 | `host.go` | Parent-chain walking, owner resolution, process trees (pure, testable) |
-| `proc_windows.go` | Process enumeration and termination, protected-process guard |
-| `config.go` | Types and `%APPDATA%` persistence |
+| `kill.go` | The children-first kill-tree walk (platform-free) |
+| `proc_windows.go` / `proc_darwin.go` | Process enumeration and termination, protected-process guard |
+| `config.go` | Types and config persistence |
 | `app.go` | Methods bound into the frontend |
 | `frontend/src/App.tsx` | The whole UI |
 
 `decide(now, snapshot, config)` takes the clock as an argument and touches no I/O, which is what
-makes the rules testable without Windows or a real idle machine.
+makes the rules testable without either OS or a real idle machine.
 
 ## Not in v1
 
 - Graceful `WM_CLOSE` before terminating.
-- Linux/macOS. The three `_windows.go` files are the entire port surface.
+- Linux. The `_windows.go` / `_darwin.go` files are the entire port surface.

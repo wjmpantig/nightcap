@@ -1,16 +1,18 @@
 # CLAUDE.md
 
-Wake watcher for Windows: finds apps holding power requests and force-closes watchlisted ones after
-the machine has been idle too long. Go + Wails v2 + React. See README.md for user-facing behaviour.
+Wake watcher for Windows and macOS: finds apps holding power requests and force-closes watchlisted
+ones after the machine has been idle too long. Go + Wails v2 + React. See README.md for user-facing
+behaviour.
 
 ## Commands
 
 ```sh
-wails dev            # needs an ELEVATED terminal, else you only get the "needs admin" state
-wails build          # build/bin/nightcap.exe
+wails dev            # Windows: needs an ELEVATED terminal, else you only get the "needs admin" state
+wails build          # build/bin/nightcap.exe / nightcap.app
 make build:windows VERSION=v1.0.0   # same, with the version stamped in (Git Bash)
 go test ./...        # all logic tests; run before claiming anything works
 gofmt -l .           # must print nothing
+GOOS=windows go build ./...   # from a Mac, keeps the Windows side honest (and vice versa is cgo, so it can't)
 ```
 
 `wails build` regenerates `frontend/wailsjs/`. Never hand-edit those files. If you add or rename a
@@ -23,14 +25,19 @@ and a `Config`, and touches no clock, syscalls, or I/O. Every behaviour change t
 gets killed belongs there, with a case in `TestDecide`. Don't smuggle rules into the tick loop or
 the UI — those are plumbing.
 
-Platform code is confined to three files, which are also the whole port surface for Linux/macOS:
+Platform code is confined to three files per OS (plus `autostart_*.go`), which are also the whole
+port surface for Linux:
 
-- `power_windows.go` — runs powercfg. Parsing lives in `power.go` with no build tag so it's testable.
-- `idle_windows.go` — `GetLastInputInfo`, fullscreen detection.
-- `proc_windows.go` — Toolhelp32 enumeration, `TerminateProcess`, process-table snapshot.
+- `power_windows.go` / `power_darwin.go` — runs powercfg / pmset. Parsing lives in `power.go` /
+  `pmset.go` with no build tag so it's testable.
+- `idle_windows.go` / `idle_darwin.go` — `GetLastInputInfo` / Quartz (cgo), fullscreen detection.
+- `proc_windows.go` / `proc_darwin.go` — Toolhelp32 / libproc enumeration, `TerminateProcess` /
+  `SIGKILL`, process-table snapshot, and each platform's `protected` set.
 
 `host.go` is platform-free (pure functions over a `map[uint32]procInfo`) and holds the parent-chain
-logic, so it is testable without Windows.
+logic; `kill.go` is the platform-free kill-tree walk over `processTable`/`killPID`. Both are
+testable without either OS. Shared tests must not reference platform symbols — use
+`errSampleFailed` in watcher tests, not a platform error.
 
 `watcher` holds `sample`, `kill`, and `now` as fields so tests can inject them. Use that instead of
 adding build tags or mocking frameworks.
@@ -42,22 +49,28 @@ adding build tags or mocking frameworks.
   deliberate and there are tests for it; don't "fix" it.
 - **Snoozed entries are invisible to the fullscreen rule too.** A snoozed app must not lend its
   exemption to anything else.
-- **Idle time is 32-bit tick arithmetic.** `idleTime()` subtracts in `uint32` on purpose so it stays
-  correct across the ~49.7 day `GetTickCount` wrap. Widening those to `int64` reintroduces the bug.
-- **`protected` in `proc_windows.go` is a safety guard, not a nicety.** nightcap runs elevated and
-  the watchlist is free text; killing `lsass.exe` bugchecks the machine. Never remove entries.
-- **A failed powercfg query must never look like an empty list.** "Nothing is keeping you awake" and
-  "I couldn't check" are different states; `Status.Error` carries the second.
+- **Idle time is 32-bit tick arithmetic on Windows.** `idleTime()` subtracts in `uint32` on purpose
+  so it stays correct across the ~49.7 day `GetTickCount` wrap. Widening those to `int64`
+  reintroduces the bug. (The darwin side gets seconds from Quartz; none of this applies.)
+- **`protected` in `proc_windows.go` / `proc_darwin.go` is a safety guard, not a nicety.** The
+  watchlist is free text; killing `lsass.exe` bugchecks Windows, killing `WindowServer` ends the
+  macOS session and killing `watchdogd` panics it. Never remove entries.
+- **A failed powercfg/pmset query must never look like an empty list.** "Nothing is keeping you
+  awake" and "I couldn't check" are different states; `Status.Error` carries the second.
 - **`powercfg` never reports a PID**, only an image path. Anything that needs to identify *which*
   instance holds a lock is guesswork; `hostsOf()` returns every candidate owner rather than picking.
+  pmset *does* report PIDs, plus "Created for PID" when a daemon (coreaudiod) fronts for an app —
+  `assertionRequests()` resolves both against the process table, so on macOS the owner is exact.
 - **Never match or kill on a shared runtime's name.** `msedgewebview2.exe` is several unrelated apps
   at once (including nightcap's own window). Matching goes through `Request.targets()`, which
   substitutes the resolved owners; `killByExe` refuses `genericHosts` outright. Bypassing either
-  means closing every WebView2 app on the machine.
+  means closing every WebView2 app on the machine. `genericHosts` also carries the macOS spellings
+  (`node`, `python3`, and the shells, so a CLI resolves to its terminal app rather than to `zsh`).
 - **Parent links must be validated with creation times** (`validParent`). Windows recycles PIDs, so
   an unvalidated PPID can name an unrelated process and misattribute a wake lock.
 - **Driver and service requests have no `Exe`.** They're displayed but unkillable, and `decide()`
-  skips them.
+  skips them. The macOS analogue: a "Created for" PID that has already exited yields an empty `Exe`
+  rather than blaming the daemon that fronted the assertion.
 - **Anything that must react to a config change hooks `store.watch()`, not the caller.** `update()`
   in `config.go` is the only way the config ever changes, so the tray follows the paused state from
   there and sees it however it was set — window switch, settings view, tray menu. Adding a second
@@ -66,13 +79,17 @@ adding build tags or mocking frameworks.
 - **Tray art is never scaled.** `build/windows/tray-{active,inactive}.ico` are packed from the brand
   pack's hand-drawn per-size PNGs by `make-tray-ico.py`; at 16–24px a 1px gap opens between the disc
   and the horizon that a downscaled 48px image loses. Re-run that script if the art changes.
-- **Autostart must stay a scheduled task.** An `HKCU\...\Run` key cannot start an elevated app and
-  fails silently at login. It is registered from XML (`schtasks /xml`) rather than `/create` flags,
-  because three `/create` defaults break a long-running watcher and none of them has a flag: it
-  won't start on battery, it stops when you unplug, and it is killed after 72 hours.
+- **Autostart must stay a scheduled task on Windows.** An `HKCU\...\Run` key cannot start an
+  elevated app and fails silently at login. It is registered from XML (`schtasks /xml`) rather than
+  `/create` flags, because three `/create` defaults break a long-running watcher and none of them
+  has a flag: it won't start on battery, it stops when you unplug, and it is killed after 72 hours.
+  On macOS it's a LaunchAgent plist — no elevation there.
 - **`Config.Autostart` is a cache, not the truth.** The task can be deleted from Task Scheduler
-  behind nightcap's back, so `NewApp()` reconciles it against `autostartEnabled()` at startup.
-  Trusting the config there is what makes the checkbox lie.
+  (or the LaunchAgent plist removed) behind nightcap's back, so `NewApp()` reconciles it against
+  `autostartEnabled()` at startup. Trusting the config there is what makes the checkbox lie.
+- **The darwin fullscreen check must never ask for window names.** `idle_darwin.go` reads only
+  bounds and layers from `CGWindowListCopyWindowInfo`; touching `kCGWindowName` triggers the
+  screen-recording permission prompt.
 
 ## Frontend
 
