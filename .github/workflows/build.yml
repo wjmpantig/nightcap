@@ -24,13 +24,15 @@ jobs:
         run: |
           $bad = gofmt -l .
           if ($bad) { $bad; exit 1 }
-      - run: go test ./...
-
       - run: go install github.com/wailsapp/wails/v2/cmd/wails@v2.15.0
+      # Before the tests: frontend/dist is gitignored, so //go:embed has nothing
+      # to match until the frontend has been built once.
       # Tag builds stamp the tag into main.version; everything else stays "dev".
       - run: wails build -platform windows/amd64 -clean -ldflags "-X main.version=$env:VERSION"
         env:
           VERSION: ${{ github.ref_type == 'tag' && github.ref_name || 'dev' }}
+
+      - run: go test ./...
 
       - uses: actions/upload-artifact@v4
         with:
