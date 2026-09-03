@@ -78,6 +78,30 @@ func TestReadAssertions(t *testing.T) {
 	}
 }
 
+// The roundtrip touches the real ~/Library/LaunchAgents, so it refuses to run
+// when autostart is genuinely enabled on this machine — disabling it behind
+// the user's back is not an acceptable test side effect.
+func TestAutostartRoundTrip(t *testing.T) {
+	if autostartEnabled() {
+		t.Skip("autostart is enabled for real on this machine; not clobbering it")
+	}
+	if err := setAutostart(true); err != nil {
+		t.Fatal(err)
+	}
+	if !autostartEnabled() {
+		t.Fatal("plist missing after enable")
+	}
+	if err := setAutostart(false); err != nil {
+		t.Fatal(err)
+	}
+	if autostartEnabled() {
+		t.Fatal("plist still there after disable")
+	}
+	if err := setAutostart(false); err != nil {
+		t.Fatal("disabling twice must be a no-op:", err)
+	}
+}
+
 func TestLaunchAgentPlistEscapesPath(t *testing.T) {
 	got := string(launchAgentPlist(`/Users/w/Apps & Tools/nightcap`))
 	if !strings.Contains(got, "<string>/Users/w/Apps &amp; Tools/nightcap</string>") {

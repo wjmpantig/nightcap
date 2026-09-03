@@ -8,16 +8,35 @@ import (
 	"path/filepath"
 )
 
+func agentPath() (string, error) {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(home, "Library", "LaunchAgents", "com.nightcap.plist"), nil
+}
+
+// autostartEnabled asks the filesystem rather than the config file. The two
+// drift: the plist can be deleted behind nightcap's back, and NewApp()
+// reconciles the config against this at startup.
+func autostartEnabled() bool {
+	p, err := agentPath()
+	if err != nil {
+		return false
+	}
+	_, err = os.Stat(p)
+	return err == nil
+}
+
 // setAutostart writes (or removes) a per-user LaunchAgent, the macOS analogue
 // of the Windows logon task — minus the elevation problem, since nightcap does
 // not need to run privileged here. The plist alone is enough: launchd reads
 // LaunchAgents at login, which is exactly when autostart should fire.
 func setAutostart(enabled bool) error {
-	home, err := os.UserHomeDir()
+	path, err := agentPath()
 	if err != nil {
 		return err
 	}
-	path := filepath.Join(home, "Library", "LaunchAgents", "com.nightcap.plist")
 	if !enabled {
 		if err := os.Remove(path); err != nil && !os.IsNotExist(err) {
 			return err
