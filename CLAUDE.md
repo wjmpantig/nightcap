@@ -67,7 +67,12 @@ adding build tags or mocking frameworks.
   pack's hand-drawn per-size PNGs by `make-tray-ico.py`; at 16–24px a 1px gap opens between the disc
   and the horizon that a downscaled 48px image loses. Re-run that script if the art changes.
 - **Autostart must stay a scheduled task.** An `HKCU\...\Run` key cannot start an elevated app and
-  fails silently at login.
+  fails silently at login. It is registered from XML (`schtasks /xml`) rather than `/create` flags,
+  because three `/create` defaults break a long-running watcher and none of them has a flag: it
+  won't start on battery, it stops when you unplug, and it is killed after 72 hours.
+- **`Config.Autostart` is a cache, not the truth.** The task can be deleted from Task Scheduler
+  behind nightcap's back, so `NewApp()` reconciles it against `autostartEnabled()` at startup.
+  Trusting the config there is what makes the checkbox lie.
 
 ## Frontend
 

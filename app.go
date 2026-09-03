@@ -22,6 +22,12 @@ type App struct {
 
 func NewApp() *App {
 	s := loadStore()
+	// The config's copy of Autostart is a cache: the task can be deleted from
+	// Task Scheduler, or survive an uninstall, without nightcap hearing about
+	// it. Ask Windows once at startup so the checkbox never lies.
+	if on := autostartEnabled(); s.get().Autostart != on {
+		_ = s.update(func(c *Config) { c.Autostart = on })
+	}
 	return &App{store: s, watcher: newWatcher(s)}
 }
 
