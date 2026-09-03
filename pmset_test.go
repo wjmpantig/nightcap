@@ -27,8 +27,13 @@ Listed by owning process:
   pid 8891(Google Chrome Helper (Renderer)): [0x0000163f000b0001] 01:02:03 PreventUserIdleDisplaySleep named: "Video Wake Lock"
   pid 138(powerd): [0x0000000c00098000] 00:00:08 InternalPreventDisplaySleep named: "com.apple.powermanagement.delayDisplayOff"
 	Timeout will fire in 8 secs Action=TimeoutActionTurnOff
+  pid 138(powerd): [0x0024265300018527] 00:15:34 PreventUserIdleSystemSleep named: "Powerd - Prevent sleep while display is on"
   pid 160(hidd): [0x0000000d00000001] 00:00:01 UserIsActive named: "com.apple.iohideventsystem.queue.tickle"
-No kernel assertions.
+  pid 83622(caffeinate): [0x002429800001862b] 00:02:02 PreventUserIdleSystemSleep named: "caffeinate command-line tool"
+	Details: caffeinate asserting for 300 secs
+	Localized=THE CAFFEINATE TOOL IS PREVENTING SLEEP.
+	Timeout will fire in 178 secs Action=TimeoutActionRelease
+Kernel Assertions: 0x104=USB,MAGICWAKE
 `
 
 func TestParsePmset(t *testing.T) {
@@ -43,8 +48,12 @@ func TestParsePmset(t *testing.T) {
 			Reason: "Video Wake Lock"},
 		{PID: 138, Name: "powerd", Type: "InternalPreventDisplaySleep",
 			Reason: "com.apple.powermanagement.delayDisplayOff"},
+		{PID: 138, Name: "powerd", Type: "PreventUserIdleSystemSleep",
+			Reason: "Powerd - Prevent sleep while display is on"},
 		{PID: 160, Name: "hidd", Type: "UserIsActive",
 			Reason: "com.apple.iohideventsystem.queue.tickle"},
+		{PID: 83622, Name: "caffeinate", Type: "PreventUserIdleSystemSleep",
+			Reason: "caffeinate command-line tool"},
 	}
 	if len(got) != len(want) {
 		t.Fatalf("parsed %d assertions, want %d: %+v", len(got), len(want), got)
@@ -87,7 +96,10 @@ func TestAssertionRequests(t *testing.T) {
 			Path: "pid 4130 (Music)", Reason: "com.apple.Music.playback"},
 		{Category: "DISPLAY", Kind: "PROCESS", Exe: "google chrome helper (renderer)",
 			Path: "pid 8891 (Google Chrome Helper (Renderer))", Reason: "Video Wake Lock"},
-		// powerd's internal timer and hidd's activity tickle are not requests.
+		// powerd's internal timer, its display-on policy assertion and hidd's
+		// activity tickle are not requests.
+		{Category: "SYSTEM", Kind: "PROCESS", Exe: "caffeinate",
+			Path: "pid 83622 (caffeinate)", Reason: "caffeinate command-line tool"},
 	}
 	if len(got) != len(want) {
 		t.Fatalf("got %d requests, want %d: %+v", len(got), len(want), got)

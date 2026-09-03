@@ -73,6 +73,13 @@ func assertionRequests(asserts []assertion, table map[uint32]procInfo) []Request
 		if !ok {
 			continue
 		}
+		// powerd's own assertions ("Prevent sleep while display is on") are OS
+		// policy that exists whenever the machine is in use — housekeeping, not
+		// an app holding the machine awake. When it fronts for an app it says
+		// so with Created for PID, and that case stays.
+		if a.Name == "powerd" && a.CreatedForPID == 0 {
+			continue
+		}
 		pid, exe := a.PID, normalizeExe(a.Name)
 		if a.CreatedForPID > 0 {
 			// The daemon is a proxy; attribute the lock to the app. If that app
