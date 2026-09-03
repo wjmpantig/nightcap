@@ -5,10 +5,13 @@
 # from a working tree: make build:windows VERSION=v1.0.0
 VERSION ?= dev
 
-.PHONY: build\:windows test fmt
+.PHONY: build\:windows build\:mac test fmt
 
 build\:windows:
 	wails build -platform windows/amd64 -ldflags "-X main.version=$(VERSION)"
+
+build\:mac:
+	wails build -platform darwin/universal -ldflags "-X main.version=$(VERSION)"
 
 test:
 	go test ./...

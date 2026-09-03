@@ -10,6 +10,7 @@ behaviour.
 wails dev            # Windows: needs an ELEVATED terminal, else you only get the "needs admin" state
 wails build          # build/bin/nightcap.exe / nightcap.app
 make build:windows VERSION=v1.0.0   # same, with the version stamped in (Git Bash)
+make build:mac VERSION=v1.0.0       # darwin/universal, version stamped in
 go test ./...        # all logic tests; run before claiming anything works
 gofmt -l .           # must print nothing
 GOOS=windows go build ./...   # from a Mac, keeps the Windows side honest (and vice versa is cgo, so it can't)
