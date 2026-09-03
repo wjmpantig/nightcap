@@ -1,0 +1,30 @@
+@use "@/design/styles/units" as *;
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding: var(--space-6) var(--pad-panel);
+}
+
+// Label/value pairs in two columns, the labels muted so the values read first.
+.facts {
+  display: grid;
+  grid-template-columns: #{rem(88px)} 1fr;
+  gap: var(--space-2) var(--space-5);
+  margin: 0;
+  font: var(--type-body);
+
+  dt {
+    font: var(--type-small);
+    color: var(--text-muted);
+  }
+
+  dd {
+    margin: 0;
+  }
+}
+
+.mono {
+  font-family: var(--font-mono);
+}

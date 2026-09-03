@@ -152,3 +152,6 @@ one component that is not a folder: it is the entry `main.tsx` imports. It still
 - Kill history lives in `Config.History`, newest first, and rides along with `GetConfig()`. Only
   successful kills are recorded — a failed kill is not a kill.
 - Prefer fixing a rule in `decide()` over adding a special case at a call site.
+- The version number lives in the git tag, nowhere else. `main.version` defaults to `"dev"` and
+  the release workflow stamps the tag in with `-ldflags`; the About view reads it via `GetVersion()`.
+  Don't add a version constant to a file — it will go stale the first release nobody remembers it.

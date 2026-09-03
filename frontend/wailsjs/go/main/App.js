@@ -18,6 +18,10 @@ export function GetStatus() {
   return window['go']['main']['App']['GetStatus']();
 }
 
+export function GetVersion() {
+  return window['go']['main']['App']['GetVersion']();
+}
+
 export function RemoveFromWatchlist(arg1) {
   return window['go']['main']['App']['RemoveFromWatchlist'](arg1);
 }

@@ -4,6 +4,7 @@ import {
   ClearHistory,
   GetConfig,
   GetStatus,
+  GetVersion,
   RemoveFromWatchlist,
   SaveSettings,
   SetAutostart,
@@ -22,6 +23,7 @@ import { Icon } from "./design/components/core/Icon"
 import { Panel } from "./design/components/core/Panel"
 import { IdleMeter } from "./design/components/data/IdleMeter"
 import { Switch } from "./design/components/forms/Switch"
+import { AboutView } from "./design/kit/AboutView"
 import { AwakeView } from "./design/kit/AwakeView"
 import { HistoryView } from "./design/kit/HistoryView"
 import { SettingsView } from "./design/kit/SettingsView"
@@ -44,6 +46,7 @@ const NAV = [
   { id: "watchlist", label: "Watchlist", icon: "eye" },
   { id: "history", label: "Closed", icon: "power" },
   { id: "settings", label: "Settings", icon: "settings" },
+  { id: "about", label: "About", icon: "info" },
 ] as const
 
 type ViewId = (typeof NAV)[number]["id"]
@@ -52,6 +55,8 @@ export default function App() {
   const [status, setStatus] = useState<Status>(EMPTY)
   const [cfg, setCfg] = useState<Config | null>(null)
   const [view, setView] = useState<ViewId>("awake")
+  // Stamped in at build time, so it never changes while the app is running.
+  const [version, setVersion] = useState("")
   // Local clock so the kill countdown ticks smoothly between the backend's 5s polls.
   const [now, setNow] = useState(Date.now())
 
@@ -89,6 +94,9 @@ export default function App() {
       }
       poll()
       refresh()
+      call(() => GetVersion())
+        .then((v) => setVersion(v as string))
+        .catch((e) => console.error("GetVersion failed", e))
       EventsOn("status", (s: Status) => {
         setStatus(s)
         refresh() // a kill or an expired snooze can change the watchlist view
@@ -137,6 +145,7 @@ export default function App() {
     watchlist: watchlist.length,
     history: cfg?.history.length ?? 0,
     settings: 0,
+    about: 0,
   }
 
   // SaveSettings takes both numbers at once; autostart and paused have their own
@@ -237,6 +246,7 @@ export default function App() {
             <HistoryView history={cfg?.history ?? []} onClear={() => act(() => ClearHistory())} />
           )}
           {view === "settings" && cfg && <SettingsView cfg={cfg} onChange={applySettings} />}
+          {view === "about" && <AboutView version={version} />}
         </main>
       </div>
 

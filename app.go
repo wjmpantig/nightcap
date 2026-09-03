@@ -5,6 +5,14 @@ import (
 	"time"
 )
 
+// version is the release tag, stamped in by the build:
+//
+//	wails build -ldflags "-X main.version=v1.2.3"
+//
+// A local `wails build` leaves it "dev", which is the honest answer for a
+// binary that came from a working tree rather than a tag.
+var version = "dev"
+
 // App is the API bound into the frontend.
 type App struct {
 	ctx     context.Context
@@ -27,6 +35,8 @@ func (a *App) startup(ctx context.Context) {
 func (a *App) GetStatus() Status { return a.watcher.status() }
 
 func (a *App) GetConfig() Config { return a.store.get() }
+
+func (a *App) GetVersion() string { return version }
 
 func (a *App) SaveSettings(defaultTimeoutMinutes, warningSeconds int) error {
 	return a.store.update(func(c *Config) {
