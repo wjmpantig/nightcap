@@ -90,6 +90,11 @@ adding build tags or mocking frameworks.
 - **The darwin fullscreen check must never ask for window names.** `idle_darwin.go` reads only
   bounds and layers from `CGWindowListCopyWindowInfo`; touching `kCGWindowName` triggers the
   screen-recording permission prompt.
+- **systray must never own the event loop.** `systray.Run` spins its own loop, which on macOS is a
+  second `[NSApp run]` beside the one Wails holds — an instant SIGTRAP. `setupTray` goes through
+  `RunWithExternalLoop` and the per-platform `trayStart` (`tray_windows.go` / `tray_darwin.go`);
+  the darwin one also runs on the main thread and puts back the NSApp delegate that systray's
+  `nativeStart` stomps, or Wails loses `applicationShouldTerminate`.
 
 ## Frontend
 

@@ -73,8 +73,13 @@ func main() {
 	}
 }
 
+// setupTray registers the tray via RunWithExternalLoop rather than
+// systray.Run: Run spins its own event loop, and on macOS that is a second
+// [NSApp run] beside the one Wails already owns — an instant SIGTRAP. The
+// external-loop form registers the callbacks and lets each platform's
+// trayStart decide how the loop is entered.
 func setupTray(app *App) {
-	systray.Run(func() {
+	start, _ := systray.RunWithExternalLoop(func() {
 		paused := app.GetConfig().Paused
 		systray.SetIcon(trayIcon(paused))
 		systray.SetTitle("nightcap")
@@ -109,4 +114,5 @@ func setupTray(app *App) {
 		systray.SetOnClick(func(systray.IMenu) { wruntime.WindowShow(app.ctx) })
 		systray.SetOnRClick(func(m systray.IMenu) { _ = m.ShowMenu() })
 	}, nil)
+	trayStart(start)
 }
