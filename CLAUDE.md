@@ -8,6 +8,7 @@ the machine has been idle too long. Go + Wails v2 + React. See README.md for use
 ```sh
 wails dev            # needs an ELEVATED terminal, else you only get the "needs admin" state
 wails build          # build/bin/nightcap.exe
+make build:windows VERSION=v1.0.0   # same, with the version stamped in (Git Bash)
 go test ./...        # all logic tests; run before claiming anything works
 gofmt -l .           # must print nothing
 ```
