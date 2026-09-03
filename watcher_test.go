@@ -1,11 +1,17 @@
 package main
 
 import (
+	"errors"
 	"testing"
 	"time"
 )
 
 var now = time.Date(2026, 8, 28, 22, 0, 0, 0, time.UTC)
+
+// errSampleFailed stands in for whatever the platform's sampler can return —
+// needs-admin on Windows, a pmset failure on macOS. The watcher must treat
+// them all the same way: as "I couldn't check", never as an empty list.
+var errSampleFailed = errors.New("could not check power requests")
 
 func req(exe string) Request {
 	return Request{Category: "SYSTEM", Kind: "PROCESS", Exe: exe, Reason: "Video is playing."}
@@ -201,7 +207,7 @@ func TestSampleErrorIsNotAnEmptyList(t *testing.T) {
 	var killed []string
 	w := newWatcher(s)
 	w.now = func() time.Time { return now }
-	w.sample = func() (Snapshot, error) { return Snapshot{}, errNeedsAdmin }
+	w.sample = func() (Snapshot, error) { return Snapshot{}, errSampleFailed }
 	w.kill = func(exe string) error { killed = append(killed, exe); return nil }
 
 	w.tick()

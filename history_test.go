@@ -51,7 +51,7 @@ func TestFailedKillIsNotRecorded(t *testing.T) {
 	w.sample = func() (Snapshot, error) {
 		return Snapshot{IdleFor: 10 * time.Minute, Requests: []Request{req("vlc.exe")}}, nil
 	}
-	w.kill = func(string) error { return errNeedsAdmin }
+	w.kill = func(string) error { return errSampleFailed }
 
 	w.tick()
 	clock = clock.Add(time.Minute)

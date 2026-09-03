@@ -17,7 +17,7 @@ func TestStatusHasNoNullArrays(t *testing.T) {
 
 	// And after a tick that failed, which takes the early-return path and
 	// publishes a Status carrying nothing but an error.
-	w.sample = func() (Snapshot, error) { return Snapshot{}, errNeedsAdmin }
+	w.sample = func() (Snapshot, error) { return Snapshot{}, errSampleFailed }
 	w.tick()
 	assertNoNulls(t, "status after a failed poll", w.status())
 
