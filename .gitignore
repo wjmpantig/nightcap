@@ -7,3 +7,10 @@ frontend/dist
 
 # wails build writes this to track frontend installs
 frontend/package.json.md5
+
+# wails dev's watcher ignores dirs by gitignore-matching absolute paths, and its
+# matcher only understands forward slashes -- so its built-in ".*" never matches
+# D:\...\.git and every git write triggers a reload. This glob does match.
+*.git*
+!.gitignore
+!.github/
