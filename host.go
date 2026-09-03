@@ -34,6 +34,12 @@ var genericHosts = map[string]bool{
 	"python.exe":               true,
 	"pythonw.exe":              true,
 	"electron.exe":             true,
+	// macOS spellings of the same idea: an interpreter or runtime name says
+	// which tool is running, not whose work it is. The shells are here so a
+	// resolveHost walk climbs through them to the terminal app that owns them
+	// instead of reporting "zsh" as the application.
+	"node": true, "java": true, "python": true, "python3": true,
+	"electron": true, "ruby": true, "sh": true, "bash": true, "zsh": true,
 }
 
 func isGenericHost(exe string) bool { return genericHosts[exe] }
