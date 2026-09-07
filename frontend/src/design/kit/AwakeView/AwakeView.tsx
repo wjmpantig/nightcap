@@ -15,6 +15,12 @@ interface AwakeViewProps {
   requests: Request[]
   watched: Set<string>
   onWatch: (exe: string) => void
+  /**
+   * Close an app now, without waiting for the idle timer. Takes a resolved
+   * owner, never a request's raw image name: a shared runtime hosts several
+   * unrelated apps and the backend refuses to close one by that name.
+   */
+  onKill: (exe: string) => void
   onRefresh: () => void
   /**
    * Status.error — the power request query could not be read at all. "I
@@ -24,7 +30,14 @@ interface AwakeViewProps {
   error?: string
 }
 
-export function AwakeView({ requests, watched, onWatch, onRefresh, error }: AwakeViewProps) {
+export function AwakeView({
+  requests,
+  watched,
+  onWatch,
+  onKill,
+  onRefresh,
+  error,
+}: AwakeViewProps) {
   const killable = requests.filter((r) => r.exe !== "")
   const drivers = requests.filter((r) => r.exe === "")
   return (
@@ -80,19 +93,35 @@ export function AwakeView({ requests, watched, onWatch, onRefresh, error }: Awak
               }
               meta={r.reason}
               actions={
-                allWatched ? (
-                  <Badge tone="watched" icon="eye">
-                    watching {targets.join(", ")}
-                  </Badge>
-                ) : (
-                  targets
-                    .filter((t) => !watched.has(t))
-                    .map((t) => (
-                      <Button key={t} size="sm" icon="eye" onClick={() => onWatch(t)}>
-                        Watch{targets.length > 1 || t !== r.exe ? ` ${t}` : ""}
-                      </Button>
-                    ))
-                )
+                <>
+                  {allWatched ? (
+                    <Badge tone="watched" icon="eye">
+                      watching {targets.join(", ")}
+                    </Badge>
+                  ) : (
+                    targets
+                      .filter((t) => !watched.has(t))
+                      .map((t) => (
+                        <Button key={t} size="sm" icon="eye" onClick={() => onWatch(t)}>
+                          Watch{targets.length > 1 || t !== r.exe ? ` ${t}` : ""}
+                        </Button>
+                      ))
+                  )}
+                  {/* One button per resolved owner, matching Watch above. Not
+                      symmetry for its own sake: for a shared runtime row r.exe
+                      is the runtime, which the backend refuses to close. */}
+                  {targets.map((t) => (
+                    <Button
+                      key={`kill-${t}`}
+                      size="sm"
+                      variant="danger"
+                      icon="x"
+                      onClick={() => onKill(t)}
+                    >
+                      Close{targets.length > 1 ? ` ${t}` : ""}
+                    </Button>
+                  ))}
+                </>
               }
             >
               <ProcessName exe={r.exe} hosts={r.hosts} path={r.path} />

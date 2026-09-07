@@ -121,6 +121,15 @@ func (a *App) Snooze(exe string, minutes int) error {
 	})
 }
 
+// KillNow closes an app immediately because the user pressed the button, with
+// no idle timer, no warning countdown and no need for it to be watchlisted.
+//
+// The exe must be a resolved owner rather than a request's raw image name: a
+// shared runtime like msedgewebview2.exe or node is several unrelated apps at
+// once, and killByExe refuses it outright. The frontend offers one button per
+// Request.targets() entry for exactly that reason.
+func (a *App) KillNow(exe string) error { return a.watcher.killNow(exe) }
+
 // ClearHistory empties the record of what nightcap has closed.
 func (a *App) ClearHistory() error {
 	return a.store.update(func(c *Config) { c.History = []KillRecord{} })

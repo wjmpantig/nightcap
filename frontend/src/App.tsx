@@ -6,6 +6,7 @@ import {
   GetConfigPath,
   GetStatus,
   GetVersion,
+  KillNow,
   RemoveFromWatchlist,
   SaveSettings,
   SetAutostart,
@@ -234,6 +235,7 @@ export default function App() {
               watched={watched}
               error={status.error}
               onWatch={(exe) => act(() => AddToWatchlist(exe))}
+              onKill={(exe) => act(() => KillNow(exe))}
               onRefresh={poll}
             />
           )}

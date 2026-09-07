@@ -26,6 +26,10 @@ export function GetVersion() {
   return window['go']['main']['App']['GetVersion']();
 }
 
+export function KillNow(arg1) {
+  return window['go']['main']['App']['KillNow'](arg1);
+}
+
 export function RemoveFromWatchlist(arg1) {
   return window['go']['main']['App']['RemoveFromWatchlist'](arg1);
 }

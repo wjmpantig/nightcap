@@ -72,6 +72,12 @@ adding build tags or mocking frameworks.
 - **Driver and service requests have no `Exe`.** They're displayed but unkillable, and `decide()`
   skips them. The macOS analogue: a "Created for" PID that has already exited yields an empty `Exe`
   rather than blaming the daemon that fronted the assertion.
+- **A manual close is a command, not a rule.** `killNow()` (bound as `App.KillNow`) bypasses
+  `decide()`, the idle timer and the watchlist on purpose, because the user already decided. It
+  still goes through `w.kill` so `protected` and `genericHosts` apply — never call `killByExe` or a
+  platform kill from a call site to skip them. The UI offers one Close button per
+  `Request.targets()` entry rather than one per `Exe` for the same reason: a shared runtime's own
+  name is refused.
 - **Anything that must react to a config change hooks `store.watch()`, not the caller.** `update()`
   in `config.go` is the only way the config ever changes, so the tray follows the paused state from
   there and sees it however it was set — window switch, settings view, tray menu. Adding a second

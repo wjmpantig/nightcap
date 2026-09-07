@@ -14,6 +14,8 @@ export function GetStatus():Promise<main.Status>;
 
 export function GetVersion():Promise<string>;
 
+export function KillNow(arg1:string):Promise<void>;
+
 export function RemoveFromWatchlist(arg1:string):Promise<void>;
 
 export function SaveSettings(arg1:number,arg2:number):Promise<void>;

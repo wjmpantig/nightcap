@@ -272,3 +272,33 @@ func (w *watcher) clearPending(exe string) {
 	delete(w.pending, exe)
 	w.mu.Unlock()
 }
+
+// killNow force-closes an app because the user asked for it, bypassing the
+// idle timer, the warning countdown and the watchlist entirely.
+//
+// decide() is deliberately not consulted: it answers "when should this be
+// killed", and a button press has already answered that. The safety guards
+// still apply, because they live in w.kill (killByExe) rather than in the
+// rule — a protected system process or a shared runtime is refused here just
+// as it would be on a timeout.
+func (w *watcher) killNow(exe string) error {
+	// Normalised once, so the pending key, the history entry and the snapshot
+	// lookups all agree on one spelling.
+	exe = normalizeExe(exe)
+	if err := w.kill(exe); err != nil {
+		return err // a failed kill is not a kill: nothing recorded
+	}
+	log.Printf("nightcap: killed %s on request", exe)
+	// Any countdown for the same app is moot now, and leaving it would show a
+	// warning overlay for a process that no longer exists.
+	w.clearPending(exe)
+	st := w.status()
+	w.record(KillRecord{
+		Exe:      exe,
+		At:       w.now(),
+		IdleSecs: st.IdleSecs,
+		Category: categoryOf(st.Requests, exe),
+		Reason:   reasonOf(st.Requests, exe),
+	})
+	return nil
+}
