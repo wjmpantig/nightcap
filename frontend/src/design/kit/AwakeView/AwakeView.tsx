@@ -48,8 +48,19 @@ export function AwakeView({ requests, watched, onWatch, onRefresh, error }: Awak
           </div>
         ) : (
           killable.length === 0 && (
-            <EmptyState title="Nothing is holding a wake lock right now.">
-              This PC will sleep on its own schedule.
+            // killable excludes driver and service requests, which have no
+            // process to close. Without this split the view claimed nothing
+            // was holding a wake lock while listing several below.
+            <EmptyState
+              title={
+                drivers.length > 0
+                  ? "Nothing here can be closed."
+                  : "Nothing is holding a wake lock right now."
+              }
+            >
+              {drivers.length > 0
+                ? "The wake locks below are held by drivers and services."
+                : "This PC will sleep on its own schedule."}
             </EmptyState>
           )
         )}
