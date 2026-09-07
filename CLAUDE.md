@@ -192,9 +192,12 @@ one component that is not a folder: it is the entry `main.tsx` imports. It still
 
 ## Conventions
 
-- **Micro commits.** One reviewable idea per commit, each one building and passing its tests on its
-  own. A mechanical rename and the behaviour change riding along with it are two commits. Say *why*
-  in the body, not what the diff already shows.
+- **Micro commits, conventional prefixes.** One reviewable idea per commit, each one building and
+  passing its tests on its own. A mechanical rename and the behaviour change riding along with it
+  are two commits. Say *why* in the body, not what the diff already shows. The prefix is not
+  cosmetic any more: semantic-release reads it to decide the next version, so `fix:` ships a patch,
+  `feat:` a minor, `BREAKING CHANGE:` in the body a major, and `ci:`/`docs:`/`chore:`/`refactor:`
+  release nothing.
 - **Keep this file true.** Any structural change — a new directory convention, a moved boundary, a
   renamed layer, a new build step, a dependency that changes how things are wired — updates CLAUDE.md
   in the same commit that makes it. A convention documented here and not followed in the code is
@@ -212,6 +215,15 @@ one component that is not a folder: it is the entry `main.tsx` imports. It still
 - The version number lives in the git tag, nowhere else. `main.version` defaults to `"dev"` and
   the release workflow stamps the tag in with `-ldflags`; the About view reads it via `GetVersion()`.
   Don't add a version constant to a file — it will go stale the first release nobody remembers it.
+  semantic-release picks the tag from the commit messages but writes it nowhere, which is why
+  `@semantic-release/npm` is not in `.releaserc.json` and must not be added: its whole job is to
+  put a version in a file.
+- **Releases are two workflows, and the split is deliberate.** `release.yml` (on push to `master`)
+  decides the version and creates the tag and the release; `build.yml` (on `release: published`)
+  builds the binaries, signs the manifest and attaches them. It has to be a GitHub App token rather
+  than `GITHUB_TOKEN`, because a release created with `GITHUB_TOKEN` does not trigger another
+  workflow — `build.yml` would simply never run. Don't "simplify" the two into one: the binaries
+  are stamped with the version via `-ldflags`, so the tag has to exist before anything is built.
 - Update checks are notify-only: nightcap never downloads or replaces itself. A `"dev"` build never
   checks, a failed check is silent (no `Status.Error` — "I couldn't reach GitHub" has no consequence,
   unlike "I couldn't read the power requests"), and the feed is the signed `update.json` on the

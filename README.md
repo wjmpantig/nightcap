@@ -111,10 +111,34 @@ go test ./...
 
 ### Releases
 
-Pushing a `v*` tag builds both platforms and publishes a release. The release also carries
-`update.json` and `update.json.sig` — the feed nightcap checks. The app refuses a manifest that
-does not verify against the public key compiled into `update.go`, so releases must be signed with
-the matching private key, held in the `UPDATE_SIGNING_KEY` repo secret.
+Releases are cut automatically from the commit messages — there is no tag to push by hand.
+Merging to `master` runs `release.yml`, which works out the next version with
+[semantic-release](https://semantic-release.gitbook.io/) and creates the tag and the GitHub
+release; publishing that release triggers `build.yml`, which compiles both platforms and attaches
+the binaries.
+
+So the commit prefix decides the version:
+
+| Commit | Result |
+| --- | --- |
+| `fix: …` | patch — `v1.0.0` → `v1.0.1` |
+| `feat: …` | minor — `v1.0.0` → `v1.1.0` |
+| `BREAKING CHANGE:` in the body | major — `v1.0.0` → `v2.0.0` |
+| `ci:` `docs:` `chore:` `refactor:` | no release |
+
+The version still lives only in the git tag. semantic-release decides what the tag should be; it
+does not write a version into any file, which is why `@semantic-release/npm` is deliberately not in
+the plugin list.
+
+This needs a GitHub App with `contents: write`, and its credentials in the `RELEASE_BOT_CLIENT_ID`
+and `RELEASE_BOT_PRIVATE_KEY` secrets. That is not decoration: a tag or release created with the
+default `GITHUB_TOKEN` does **not** trigger other workflows, so `build.yml` would never fire and
+releases would sit there with no binaries attached.
+
+The release also carries `update.json` and `update.json.sig` — the feed nightcap checks. The app
+refuses a manifest that does not verify against the public key compiled into `update.go`, so
+releases must be signed with the matching private key, held in the `UPDATE_SIGNING_KEY` repo
+secret.
 
 Generating that keypair, once:
 
