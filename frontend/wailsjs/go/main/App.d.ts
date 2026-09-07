@@ -12,6 +12,8 @@ export function GetConfigPath():Promise<string>;
 
 export function GetStatus():Promise<main.Status>;
 
+export function GetUpdate():Promise<main.Update>;
+
 export function GetVersion():Promise<string>;
 
 export function KillNow(arg1:string):Promise<void>;

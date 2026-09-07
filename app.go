@@ -2,7 +2,11 @@ package main
 
 import (
 	"context"
+	"log"
+	"sync"
 	"time"
+
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 // version is the release tag, stamped in by the build:
@@ -18,6 +22,15 @@ type App struct {
 	ctx     context.Context
 	store   *store
 	watcher *watcher
+
+	mu     sync.Mutex
+	update *Update // newest release seen, nil until a check finds one
+
+	// onUpdate is the one hook for "a new release exists", set by setupTray.
+	// One hook rather than the update loop poking the tray directly, for the
+	// same reason store.watch() exists: the next thing that needs to know
+	// registers here instead of a second notifier being bolted on upstream.
+	onUpdate func(Update)
 }
 
 func NewApp() *App {
@@ -34,6 +47,90 @@ func NewApp() *App {
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 	go a.watcher.run(ctx)
+	go a.watchUpdates(ctx)
+}
+
+// updateCheckDelay keeps the first check off the launch path: at login the
+// network is routinely not up yet, and nothing here is worth delaying a
+// window for.
+const (
+	updateCheckDelay    = 30 * time.Second
+	updateCheckInterval = 24 * time.Hour
+)
+
+// watchUpdates polls the signed release manifest and announces a newer one.
+//
+// Failure is silent by design. "I could not reach GitHub" has no consequence
+// for the user — unlike the powercfg/pmset error carried in Status.Error,
+// where "I could not check" genuinely differs from "nothing is keeping you
+// awake". An unreachable update feed just means no news.
+func (a *App) watchUpdates(ctx context.Context) {
+	if version == "dev" {
+		return // a working-tree build is not on the release timeline
+	}
+	if updateKey() == nil {
+		// No signing key compiled in, so nothing could ever be trusted. Say so
+		// once instead of failing a request every 24h forever.
+		log.Println("nightcap: update checks disabled (no signing key)")
+		return
+	}
+	t := time.NewTimer(updateCheckDelay)
+	defer t.Stop()
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-t.C:
+		}
+		if u, err := fetchUpdate(ctx); err != nil {
+			log.Println("nightcap: update check:", err)
+		} else if newer(version, u.Version) {
+			a.setUpdate(u)
+		}
+		t.Reset(updateCheckInterval)
+	}
+}
+
+func (a *App) setUpdate(u Update) {
+	a.mu.Lock()
+	a.update = &u
+	hook := a.onUpdate
+	a.mu.Unlock()
+
+	log.Printf("nightcap: %s is available", u.Version)
+	if a.ctx != nil {
+		runtime.EventsEmit(a.ctx, "update", u)
+	}
+	// Called outside the lock: the tray callback has no business being able to
+	// deadlock a read of this by calling back in.
+	if hook != nil {
+		hook(u)
+	}
+}
+
+// setOnUpdate registers the tray's hook and immediately replays a release that
+// was already found, so it does not matter whether the check or the tray got
+// there first. Guarded because the two run on different goroutines.
+func (a *App) setOnUpdate(f func(Update)) {
+	a.mu.Lock()
+	a.onUpdate = f
+	u := a.update
+	a.mu.Unlock()
+	if u != nil && f != nil {
+		f(*u)
+	}
+}
+
+// GetUpdate returns the newest release seen, or a zero Update if none. The
+// frontend also receives this as an "update" event; this is for the initial
+// render, since the first check lands well after the window does.
+func (a *App) GetUpdate() Update {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	if a.update == nil {
+		return Update{}
+	}
+	return *a.update
 }
 
 // GetStatus returns the most recent poll result. The frontend also receives

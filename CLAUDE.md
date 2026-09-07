@@ -36,8 +36,9 @@ port surface for Linux:
   `SIGKILL`, process-table snapshot, and each platform's `protected` set.
 
 `host.go` is platform-free (pure functions over a `map[uint32]procInfo`) and holds the parent-chain
-logic; `kill.go` is the platform-free kill-tree walk over `processTable`/`killPID`. Both are
-testable without either OS. Shared tests must not reference platform symbols — use
+logic; `kill.go` is the platform-free kill-tree walk over `processTable`/`killPID`. `update.go` is
+the release check, also platform-free: `newer()` and `parseManifest()` carry the logic and are
+tested, `fetchUpdate()` is the thin I/O half. All three are testable without either OS. Shared tests must not reference platform symbols — use
 `errSampleFailed` in watcher tests, not a platform error.
 
 `watcher` holds `sample`, `kill`, and `now` as fields so tests can inject them. Use that instead of
@@ -72,6 +73,20 @@ adding build tags or mocking frameworks.
 - **Driver and service requests have no `Exe`.** They're displayed but unkillable, and `decide()`
   skips them. The macOS analogue: a "Created for" PID that has already exited yields an empty `Exe`
   rather than blaming the daemon that fronted the assertion.
+- **The update manifest's signature is load-bearing, and an all-zero key is worse than none.**
+  `update.go` fetches a signed `update.json` from the latest release and refuses it unless it
+  verifies against the ed25519 key compiled into the binary. That is not ceremony: nightcap runs
+  elevated on Windows, so whoever nightcap trusts to name the next release is worth a lot to an
+  attacker, and TLS alone would make that "whoever can publish a release". Note the trap in
+  `parseUpdateKey`: all-zero key bytes decode to an *order-4 point*, not the identity, so 64 zero
+  bytes verify as a valid signature for roughly one message in four — and the manifest text is
+  attacker-chosen, so grinding whitespace until it lands is trivial. A zero placeholder is a key
+  that accepts forgeries. `TestZeroKeyAcceptsAForgery` proves it and guards the check. An empty
+  `updateKeyHex` disables update checks entirely, which is the correct fail-closed default.
+- **The update public key cannot be backfilled.** It ships inside the binary, so copies already
+  installed can never learn a new one. That is why it is there before anything downloads updates.
+  The private half is the `UPDATE_SIGNING_KEY` repo secret and must be backed up offline; losing it
+  means no future release verifies for anyone who does not reinstall by hand.
 - **A manual close is a command, not a rule.** `killNow()` (bound as `App.KillNow`) bypasses
   `decide()`, the idle timer and the watchlist on purpose, because the user already decided. It
   still goes through `w.kill` so `protected` and `genericHosts` apply — never call `killByExe` or a
@@ -97,6 +112,11 @@ adding build tags or mocking frameworks.
 - **The darwin fullscreen check must never ask for window names.** `idle_darwin.go` reads only
   bounds and layers from `CGWindowListCopyWindowInfo`; touching `kCGWindowName` triggers the
   screen-recording permission prompt.
+- **"A new release exists" has one hook too.** `App.setOnUpdate` is the tray's, registered from
+  `setupTray` and replaying anything already found, so it does not matter whether the check or the
+  tray got there first. Same reasoning as `store.watch()`: the next consumer registers here rather
+  than the update loop growing a second notifier. The tray *icon* deliberately does not change for
+  an update — see the tray-art rule above.
 - **systray must never own the event loop.** `systray.Run` spins its own loop, which on macOS is a
   second `[NSApp run]` beside the one Wails holds — an instant SIGTRAP. `setupTray` goes through
   `RunWithExternalLoop` and the per-platform `trayStart` (`tray_windows.go` / `tray_darwin.go`);
@@ -115,8 +135,10 @@ crossing the boundary goes through `normalize()` in `watcher.go` (Status) or `sa
 `src/design/` holds the tokens (`styles.css`, pulled in by `src/style.css`), the primitives in
 `components/`, and the app's four views plus the countdown overlay in `kit/`. Those views are
 presentational: no state, no bindings, data and callbacks in from `App.tsx`. Boundary types live in
-`src/types.ts` and the shared formatters in `src/format.ts` — `wailsjs/models.ts` has never been
-generated here, so the bound methods' return types are useless and every call site casts. Read
+`src/types.ts` and the shared formatters in `src/format.ts`. `wailsjs/models.ts` *is* generated and
+`App.d.ts` imports it, but the generated `main.*` classes are not the hand-written interfaces the
+app actually uses, so call sites still cast to the `src/types.ts` shape (`as unknown as Config`).
+Add a new boundary type to `src/types.ts`; the generated class is not the source of truth. Read
 `src/design/README.md` before changing anything visual; it is the rulebook the components follow.
 
 Wails injects `window.go` *after* the page starts executing, and the generated bindings dereference
@@ -187,10 +209,16 @@ one component that is not a folder: it is the entry `main.tsx` imports. It still
 - Kill history lives in `Config.History`, newest first, and rides along with `GetConfig()`. Only
   successful kills are recorded — a failed kill is not a kill.
 - Prefer fixing a rule in `decide()` over adding a special case at a call site.
+- The version number lives in the git tag, nowhere else. `main.version` defaults to `"dev"` and
+  the release workflow stamps the tag in with `-ldflags`; the About view reads it via `GetVersion()`.
+  Don't add a version constant to a file — it will go stale the first release nobody remembers it.
+- Update checks are notify-only: nightcap never downloads or replaces itself. A `"dev"` build never
+  checks, a failed check is silent (no `Status.Error` — "I couldn't reach GitHub" has no consequence,
+  unlike "I couldn't read the power requests"), and the feed is the signed `update.json` on the
+  latest release rather than the GitHub API, because an API response cannot be signed. Generating
+  the keypair needs real OpenSSL — macOS's `/usr/bin/openssl` is LibreSSL and has no `pkeyutl
+  -rawin`. See README for the commands.
 - No OS-specific wording in the UI. The app is Windows and macOS, so the frontend says "this
   machine", not "this PC", and never names `powercfg`/`pmset`. Anything genuinely per-OS — the
   config file location — is asked of Go (`GetConfigPath()`), not spelled out in the TSX, which is
   how a hardcoded `%APPDATA%` path came to be shown to Mac users.
-- The version number lives in the git tag, nowhere else. `main.version` defaults to `"dev"` and
-  the release workflow stamps the tag in with `-ldflags`; the About view reads it via `GetVersion()`.
-  Don't add a version constant to a file — it will go stale the first release nobody remembers it.

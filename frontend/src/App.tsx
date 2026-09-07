@@ -5,6 +5,7 @@ import {
   GetConfig,
   GetConfigPath,
   GetStatus,
+  GetUpdate,
   GetVersion,
   KillNow,
   RemoveFromWatchlist,
@@ -14,13 +15,14 @@ import {
   SetTimeout,
   Snooze,
 } from "../wailsjs/go/main/App"
-import { EventsOn } from "../wailsjs/runtime/runtime"
+import { BrowserOpenURL, EventsOn } from "../wailsjs/runtime/runtime"
 import styles from "./App.module.scss"
 import { call, whenReady } from "./bridge"
 import { Lockup } from "./design/components/brand/Lockup"
 import { Mark } from "./design/components/brand/Mark"
 import { Badge } from "./design/components/core/Badge"
 import { Banner } from "./design/components/core/Banner"
+import { Button } from "./design/components/core/Button"
 import { Icon } from "./design/components/core/Icon"
 import { Panel } from "./design/components/core/Panel"
 import { IdleMeter } from "./design/components/data/IdleMeter"
@@ -32,7 +34,7 @@ import { SettingsView } from "./design/kit/SettingsView"
 import { WarningOverlay } from "./design/kit/WarningOverlay"
 import { WatchlistView } from "./design/kit/WatchlistView"
 import { snoozeRemaining } from "./format"
-import type { Config, Settings, Status } from "./types"
+import type { Config, Settings, Status, Update } from "./types"
 
 const EMPTY: Status = {
   requests: [],
@@ -60,6 +62,10 @@ export default function App() {
   // Stamped in at build time, so it never changes while the app is running.
   const [version, setVersion] = useState("")
   const [configPath, setConfigPath] = useState("")
+  const [update, setUpdate] = useState<Update | null>(null)
+  // Dismissal is per-session on purpose: the notice comes back next launch,
+  // which is the point of a tray app nobody opens.
+  const [updateHidden, setUpdateHidden] = useState(false)
   // Local clock so the kill countdown ticks smoothly between the backend's 5s polls.
   const [now, setNow] = useState(Date.now())
 
@@ -103,6 +109,15 @@ export default function App() {
       call(() => GetConfigPath())
         .then((p) => setConfigPath(p as string))
         .catch((e) => console.error("GetConfigPath failed", e))
+      // The first check lands ~30s in, so this is only for a window opened
+      // after one has already been found. The event covers the rest.
+      call(() => GetUpdate())
+        .then((u) => {
+          const up = u as Update
+          if (up?.version) setUpdate(up)
+        })
+        .catch((e) => console.error("GetUpdate failed", e))
+      EventsOn("update", (u: Update) => setUpdate(u))
       EventsOn("status", (s: Status) => {
         setStatus(s)
         refresh() // a kill or an expired snooze can change the watchlist view
@@ -223,8 +238,23 @@ export default function App() {
         </nav>
 
         <main className={styles.scroll}>
+          {update?.version && !updateHidden && (
+            <Banner
+              tone="info"
+              className={styles.bannerGap}
+              title={`nightcap ${update.version} is available`}
+              action={
+                <Button size="sm" icon="external-link" onClick={() => BrowserOpenURL(update.url)}>
+                  View release
+                </Button>
+              }
+              onDismiss={() => setUpdateHidden(true)}
+            >
+              You are on {version}.
+            </Banner>
+          )}
           {status.warning && (
-            <Banner tone="warning" className={styles.warning}>
+            <Banner tone="warning" className={styles.bannerGap}>
               {status.warning}
             </Banner>
           )}
@@ -255,7 +285,7 @@ export default function App() {
           {view === "settings" && cfg && (
             <SettingsView cfg={cfg} onChange={applySettings} configPath={configPath} />
           )}
-          {view === "about" && <AboutView version={version} />}
+          {view === "about" && <AboutView version={version} update={update ?? undefined} />}
         </main>
       </div>
 

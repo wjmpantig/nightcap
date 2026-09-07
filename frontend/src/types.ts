@@ -78,3 +78,13 @@ export interface Status {
   error: string
   warning: string
 }
+
+/**
+ * A newer release, from the signed manifest on the latest GitHub release.
+ * Both fields empty means no update is known — either none exists, the check
+ * has not run yet, or it failed (which is deliberately silent).
+ */
+export interface Update {
+  version: string
+  url: string
+}

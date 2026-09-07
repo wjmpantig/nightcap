@@ -22,6 +22,10 @@ export function GetStatus() {
   return window['go']['main']['App']['GetStatus']();
 }
 
+export function GetUpdate() {
+  return window['go']['main']['App']['GetUpdate']();
+}
+
 export function GetVersion() {
   return window['go']['main']['App']['GetVersion']();
 }

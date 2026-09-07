@@ -87,9 +87,44 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           merge-multiple: true
+
+      # The update feed. nightcap fetches this manifest from
+      # releases/latest/download/ and refuses it unless the signature matches
+      # the public key compiled into the binary. That check is the only thing
+      # standing between "a new release exists" and an attacker with the
+      # release channel telling an elevated app what to install, so a release
+      # must never ship an unsigned or mis-signed manifest.
+      #
+      # printf, not echo or a heredoc: the app verifies the exact bytes it
+      # downloads, so nothing may add a trailing newline after signing.
+      - name: Sign the update manifest
+        env:
+          TAG: ${{ github.ref_name }}
+          REPO: ${{ github.repository }}
+          KEY: ${{ secrets.UPDATE_SIGNING_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "$KEY" ]; then
+            echo "UPDATE_SIGNING_KEY is not set; refusing to publish a release with no update feed" >&2
+            exit 1
+          fi
+          printf '{"version":"%s","url":"https://github.com/%s/releases/tag/%s"}' \
+            "$TAG" "$REPO" "$TAG" > update.json
+          printf '%s' "$KEY" > key.pem
+          openssl pkeyutl -sign -rawin -inkey key.pem -in update.json -out update.json.sig
+          # Verify before publishing: a silently broken signature would ship a
+          # release that no client will ever accept.
+          openssl pkey -in key.pem -pubout -out pub.pem
+          openssl pkeyutl -verify -rawin -pubin -inkey pub.pem \
+            -in update.json -sigfile update.json.sig
+          rm -f key.pem pub.pem
+          cat update.json
+
       - uses: softprops/action-gh-release@v2
         with:
           files: |
             nightcap.exe
             nightcap-macos.zip
+            update.json
+            update.json.sig
           generate_release_notes: true

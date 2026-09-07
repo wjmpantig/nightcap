@@ -6,6 +6,20 @@ machine has genuinely been idle long enough.
 
 Windows and macOS. Go + Wails v2 + React.
 
+## Install
+
+Grab the latest [release](https://github.com/wjmpantig/nightcap/releases/latest):
+
+- **Windows** — `nightcap.exe`. No installer; put it wherever you want it and run it. It asks for
+  administrator rights (see below).
+- **macOS** — `nightcap-macos.zip`, unzip and move `nightcap.app` to `/Applications`.
+
+Neither build is code-signed, so the first launch needs a nudge past SmartScreen ("More info" →
+"Run anyway") or Gatekeeper (right-click → Open).
+
+nightcap checks for a newer release once a day and tells you in the window and the tray. It never
+downloads or installs anything itself — you stay in charge of that.
+
 ## What it does
 
 1. Polls `powercfg /requests` (Windows) or `pmset -g assertions` (macOS) every 5 seconds to see
@@ -95,6 +109,32 @@ wails build    # produces build/bin/nightcap.exe (Windows) or build/bin/nightcap
 go test ./...
 ```
 
+### Releases
+
+Pushing a `v*` tag builds both platforms and publishes a release. The release also carries
+`update.json` and `update.json.sig` — the feed nightcap checks. The app refuses a manifest that
+does not verify against the public key compiled into `update.go`, so releases must be signed with
+the matching private key, held in the `UPDATE_SIGNING_KEY` repo secret.
+
+Generating that keypair, once:
+
+```sh
+# Needs real OpenSSL. macOS's /usr/bin/openssl is LibreSSL and has no -rawin;
+# use Homebrew's (/opt/homebrew/bin/openssl).
+openssl genpkey -algorithm ed25519 -out nightcap-update.pem
+
+# The 64 hex chars go into updateKeyHex in update.go.
+openssl pkey -in nightcap-update.pem -pubout -outform DER | tail -c 32 | xxd -p -c 32
+
+# The private key goes into the repo secret, and nowhere else.
+gh secret set UPDATE_SIGNING_KEY < nightcap-update.pem
+```
+
+**Back the private key up offline.** The public half lives inside every binary already shipped and
+cannot be changed retroactively, so losing the private key means no future release will verify for
+anyone who does not reinstall by hand. An empty `updateKeyHex` disables update checks, which is the
+fail-closed default before a key exists.
+
 ### Layout
 
 | File | Purpose |
@@ -107,6 +147,7 @@ go test ./...
 | `kill.go` | The children-first kill-tree walk (platform-free) |
 | `proc_windows.go` / `proc_darwin.go` | Process enumeration and termination, protected-process guard |
 | `config.go` | Types and config persistence |
+| `update.go` | The release check: signature verification and version comparison (pure, testable) |
 | `app.go` | Methods bound into the frontend |
 | `frontend/src/App.tsx` | The whole UI |
 
