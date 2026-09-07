@@ -4,6 +4,14 @@ frontend/dist
 
 # stray build output
 /nightcap.exe
+/nightcap
+
+# Private keys never belong in the tree: the GitHub App key that cuts releases
+# and the ed25519 key that signs the update manifest. The public half of the
+# latter is compiled into update.go on purpose; the private half is a repo
+# secret and a backup you hold offline.
+*.pem
+*private-key*
 
 # wails build writes this to track frontend installs
 frontend/package.json.md5
