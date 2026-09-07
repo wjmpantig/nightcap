@@ -3,6 +3,7 @@ import {
   AddToWatchlist,
   ClearHistory,
   GetConfig,
+  GetConfigPath,
   GetStatus,
   GetVersion,
   RemoveFromWatchlist,
@@ -57,6 +58,7 @@ export default function App() {
   const [view, setView] = useState<ViewId>("awake")
   // Stamped in at build time, so it never changes while the app is running.
   const [version, setVersion] = useState("")
+  const [configPath, setConfigPath] = useState("")
   // Local clock so the kill countdown ticks smoothly between the backend's 5s polls.
   const [now, setNow] = useState(Date.now())
 
@@ -97,6 +99,9 @@ export default function App() {
       call(() => GetVersion())
         .then((v) => setVersion(v as string))
         .catch((e) => console.error("GetVersion failed", e))
+      call(() => GetConfigPath())
+        .then((p) => setConfigPath(p as string))
+        .catch((e) => console.error("GetConfigPath failed", e))
       EventsOn("status", (s: Status) => {
         setStatus(s)
         refresh() // a kill or an expired snooze can change the watchlist view
@@ -245,7 +250,9 @@ export default function App() {
           {view === "history" && (
             <HistoryView history={cfg?.history ?? []} onClear={() => act(() => ClearHistory())} />
           )}
-          {view === "settings" && cfg && <SettingsView cfg={cfg} onChange={applySettings} />}
+          {view === "settings" && cfg && (
+            <SettingsView cfg={cfg} onChange={applySettings} configPath={configPath} />
+          )}
           {view === "about" && <AboutView version={version} />}
         </main>
       </div>

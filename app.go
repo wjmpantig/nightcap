@@ -44,6 +44,18 @@ func (a *App) GetConfig() Config { return a.store.get() }
 
 func (a *App) GetVersion() string { return version }
 
+// GetConfigPath is where the config actually lives, which differs per OS
+// (%APPDATA% on Windows, ~/Library/Application Support on macOS). Asked of Go
+// rather than spelled out in the UI, where it was a hardcoded Windows path
+// that was simply wrong on a Mac.
+func (a *App) GetConfigPath() string {
+	p, err := configPath()
+	if err != nil {
+		return ""
+	}
+	return p
+}
+
 func (a *App) SaveSettings(defaultTimeoutMinutes, warningSeconds int) error {
 	return a.store.update(func(c *Config) {
 		if defaultTimeoutMinutes > 0 {

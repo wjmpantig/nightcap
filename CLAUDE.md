@@ -181,6 +181,10 @@ one component that is not a folder: it is the entry `main.tsx` imports. It still
 - Kill history lives in `Config.History`, newest first, and rides along with `GetConfig()`. Only
   successful kills are recorded — a failed kill is not a kill.
 - Prefer fixing a rule in `decide()` over adding a special case at a call site.
+- No OS-specific wording in the UI. The app is Windows and macOS, so the frontend says "this
+  machine", not "this PC", and never names `powercfg`/`pmset`. Anything genuinely per-OS — the
+  config file location — is asked of Go (`GetConfigPath()`), not spelled out in the TSX, which is
+  how a hardcoded `%APPDATA%` path came to be shown to Mac users.
 - The version number lives in the git tag, nowhere else. `main.version` defaults to `"dev"` and
   the release workflow stamps the tag in with `-ldflags`; the About view reads it via `GetVersion()`.
   Don't add a version constant to a file — it will go stale the first release nobody remembers it.

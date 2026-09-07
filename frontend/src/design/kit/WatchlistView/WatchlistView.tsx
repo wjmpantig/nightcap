@@ -43,7 +43,7 @@ export function WatchlistView({
         />
         {entries.length === 0 && (
           <EmptyState icon="eye-off" title="Nothing watched yet.">
-            Add an app from “Keeping this PC awake”, or type its executable name below.
+            Add an app from “Keeping this machine awake”, or type its executable name below.
           </EmptyState>
         )}
         {entries.map((e) => {

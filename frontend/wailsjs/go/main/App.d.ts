@@ -8,6 +8,8 @@ export function ClearHistory():Promise<void>;
 
 export function GetConfig():Promise<main.Config>;
 
+export function GetConfigPath():Promise<string>;
+
 export function GetStatus():Promise<main.Status>;
 
 export function GetVersion():Promise<string>;

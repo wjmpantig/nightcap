@@ -17,9 +17,9 @@ interface AwakeViewProps {
   onWatch: (exe: string) => void
   onRefresh: () => void
   /**
-   * Status.error — powercfg could not be read at all. "I couldn't check" and
-   * "nothing is keeping you awake" are different states, so this replaces the
-   * empty state rather than sitting above it.
+   * Status.error — the power request query could not be read at all. "I
+   * couldn't check" and "nothing is keeping you awake" are different states,
+   * so this replaces the empty state rather than sitting above it.
    */
   error?: string
 }
@@ -31,9 +31,9 @@ export function AwakeView({ requests, watched, onWatch, onRefresh, error }: Awak
     <div className={cx("fade-in", styles.view)}>
       <Panel pad={false}>
         <SectionHeader
-          title="Keeping this PC awake"
+          title="Keeping this machine awake"
           count={killable.length}
-          hint="powercfg is re-polled every 5s"
+          hint="Re-polled every 5s"
           actions={
             <Button size="sm" variant="ghost" icon="refresh-cw" onClick={onRefresh}>
               Refresh
@@ -42,7 +42,10 @@ export function AwakeView({ requests, watched, onWatch, onRefresh, error }: Awak
         />
         {error ? (
           <div className={styles.errorSlot}>
-            <Banner tone="error" title="nightcap could not check what is keeping this PC awake">
+            <Banner
+              tone="error"
+              title="nightcap could not check what is keeping this machine awake"
+            >
               {error}
             </Banner>
           </div>
@@ -60,7 +63,7 @@ export function AwakeView({ requests, watched, onWatch, onRefresh, error }: Awak
             >
               {drivers.length > 0
                 ? "The wake locks below are held by drivers and services."
-                : "This PC will sleep on its own schedule."}
+                : "This machine will sleep on its own schedule."}
             </EmptyState>
           )
         )}

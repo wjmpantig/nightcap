@@ -14,7 +14,7 @@ export function AboutView({ version }: AboutViewProps) {
       <Panel pad={false}>
         <SectionHeader title="About" />
         <div className={styles.body}>
-          <Lockup size={26} tagline="Wake watcher for Windows" />
+          <Lockup size={26} tagline="Wake watcher for Windows and macOS" />
           <dl className={styles.facts}>
             <dt>Version</dt>
             <dd className={styles.mono}>{version}</dd>
