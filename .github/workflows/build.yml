@@ -1,9 +1,13 @@
 name: build
 
+# Releases are cut by release.yml (semantic-release), which creates the tag and
+# the release; publishing that release triggers this workflow to build the
+# binaries and attach them. Building on the release event rather than on the tag
+# push means the release is guaranteed to exist by the time we upload to it.
 on:
   pull_request:
-  push:
-    tags: ["v*"]
+  release:
+    types: [published]
 
 jobs:
   windows:
@@ -30,7 +34,7 @@ jobs:
       # Tag builds stamp the tag into main.version; everything else stays "dev".
       - run: wails build -platform windows/amd64 -clean -ldflags "-X main.version=$env:VERSION"
         env:
-          VERSION: ${{ github.ref_type == 'tag' && github.ref_name || 'dev' }}
+          VERSION: ${{ github.event_name == 'release' && github.event.release.tag_name || 'dev' }}
 
       - run: go test ./...
 
@@ -62,7 +66,7 @@ jobs:
       # to match until the frontend has been built once.
       - run: wails build -platform darwin/universal -clean -ldflags "-X main.version=$VERSION"
         env:
-          VERSION: ${{ github.ref_type == 'tag' && github.ref_name || 'dev' }}
+          VERSION: ${{ github.event_name == 'release' && github.event.release.tag_name || 'dev' }}
 
       - run: go test ./...
 
@@ -75,10 +79,10 @@ jobs:
           name: nightcap-macos
           path: build/bin/nightcap-macos.zip
 
-  # One release step, after both builds, so the two jobs never race to create
+  # One upload step, after both builds, so the two jobs never race to attach to
   # the same release.
   release:
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: github.event_name == 'release'
     needs: [windows, macos]
     runs-on: ubuntu-latest
     permissions:
@@ -87,9 +91,47 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           merge-multiple: true
+
+      # The update feed. nightcap fetches this manifest from
+      # releases/latest/download/ and refuses it unless the signature matches
+      # the public key compiled into the binary. That check is the only thing
+      # standing between "a new release exists" and an attacker with the
+      # release channel telling an elevated app what to install, so a release
+      # must never ship an unsigned or mis-signed manifest.
+      #
+      # printf, not echo or a heredoc: the app verifies the exact bytes it
+      # downloads, so nothing may add a trailing newline after signing.
+      - name: Sign the update manifest
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+          REPO: ${{ github.repository }}
+          KEY: ${{ secrets.UPDATE_SIGNING_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "$KEY" ]; then
+            echo "UPDATE_SIGNING_KEY is not set; refusing to publish a release with no update feed" >&2
+            exit 1
+          fi
+          printf '{"version":"%s","url":"https://github.com/%s/releases/tag/%s"}' \
+            "$TAG" "$REPO" "$TAG" > update.json
+          printf '%s' "$KEY" > key.pem
+          openssl pkeyutl -sign -rawin -inkey key.pem -in update.json -out update.json.sig
+          # Verify before publishing: a silently broken signature would ship a
+          # release that no client will ever accept.
+          openssl pkey -in key.pem -pubout -out pub.pem
+          openssl pkeyutl -verify -rawin -pubin -inkey pub.pem \
+            -in update.json -sigfile update.json.sig
+          rm -f key.pem pub.pem
+          cat update.json
+
+      # Uploads onto the release semantic-release already created. No
+      # generate_release_notes here: that would overwrite its notes with
+      # GitHub's own.
       - uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.event.release.tag_name }}
           files: |
             nightcap.exe
             nightcap-macos.zip
-          generate_release_notes: true
+            update.json
+            update.json.sig

@@ -11,6 +11,12 @@ import styles from "./SettingsView.module.scss"
 interface SettingsViewProps {
   cfg: Settings
   onChange: (patch: Partial<Settings>) => void
+  /**
+   * Where the config actually lives, asked of Go. It differs per OS, so it
+   * cannot be written out here — it used to be a hardcoded %APPDATA% path,
+   * which was simply wrong on macOS.
+   */
+  configPath?: string
 }
 
 interface SettingProps {
@@ -31,7 +37,7 @@ function Setting({ label, hint, children }: SettingProps) {
   )
 }
 
-export function SettingsView({ cfg, onChange }: SettingsViewProps) {
+export function SettingsView({ cfg, onChange, configPath }: SettingsViewProps) {
   return (
     <div className={cx("fade-in", styles.view)}>
       <Panel pad={false}>
@@ -68,7 +74,6 @@ export function SettingsView({ cfg, onChange }: SettingsViewProps) {
             checked={cfg.autostart}
             onChange={(e) => onChange({ autostart: e.target.checked })}
             label="Start nightcap at login"
-            hint="Registers a scheduled task with highest privileges — a Run key cannot launch an elevated app."
           />
           <Switch
             checked={cfg.paused}
@@ -82,9 +87,11 @@ export function SettingsView({ cfg, onChange }: SettingsViewProps) {
         </div>
       </Panel>
 
-      <div className={styles.configPath}>
-        <span>%APPDATA%\nightcap\config.json</span>
-      </div>
+      {configPath && (
+        <div className={styles.configPath}>
+          <span>{configPath}</span>
+        </div>
+      )}
     </div>
   )
 }

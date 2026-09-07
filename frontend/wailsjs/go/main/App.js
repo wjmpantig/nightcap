@@ -14,12 +14,24 @@ export function GetConfig() {
   return window['go']['main']['App']['GetConfig']();
 }
 
+export function GetConfigPath() {
+  return window['go']['main']['App']['GetConfigPath']();
+}
+
 export function GetStatus() {
   return window['go']['main']['App']['GetStatus']();
 }
 
+export function GetUpdate() {
+  return window['go']['main']['App']['GetUpdate']();
+}
+
 export function GetVersion() {
   return window['go']['main']['App']['GetVersion']();
+}
+
+export function KillNow(arg1) {
+  return window['go']['main']['App']['KillNow'](arg1);
 }
 
 export function RemoveFromWatchlist(arg1) {

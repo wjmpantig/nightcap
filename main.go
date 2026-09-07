@@ -87,6 +87,12 @@ func setupTray(app *App) {
 
 		show := systray.AddMenuItem("Show nightcap", "")
 		pause := systray.AddMenuItemCheckbox("Pause watching", "", paused)
+		// Added up front and hidden: the menu is built once here, but an update
+		// is only discovered a while after launch. The tray *icon* deliberately
+		// does not change — the .ico files are hand-drawn per size and never
+		// scaled, so a third state would need new art from the brand pack.
+		update := systray.AddMenuItem("Update available", "")
+		update.Hide()
 		systray.AddSeparator()
 		quit := systray.AddMenuItem("Quit", "")
 
@@ -103,7 +109,24 @@ func setupTray(app *App) {
 			}
 		})
 
+		// The same one-hook rule as store.watch() above: the update loop
+		// announces once and the tray follows, rather than the loop knowing
+		// about menu items. setOnUpdate also replays a release already found,
+		// so it does not matter which of the two got here first.
+		app.setOnUpdate(func(u Update) {
+			update.SetTitle("Update to " + u.Version)
+			update.SetTooltip("Open the " + u.Version + " release page")
+			update.Show()
+		})
+
 		show.Click(func() { wruntime.WindowShow(app.ctx) })
+		// Registered once, reading the URL when clicked rather than closing
+		// over it, so a second announcement cannot stack a second handler.
+		update.Click(func() {
+			if u := app.GetUpdate(); u.URL != "" {
+				wruntime.BrowserOpenURL(app.ctx, u.URL)
+			}
+		})
 		pause.Click(func() {
 			if err := app.SetPaused(!pause.Checked()); err != nil {
 				log.Println("nightcap: pause:", err)

@@ -218,3 +218,89 @@ func TestSampleErrorIsNotAnEmptyList(t *testing.T) {
 		t.Fatalf("killed something off a failed query: %v", killed)
 	}
 }
+
+// killNow is the button, not the rule: it closes an app that is not on the
+// watchlist and has no countdown, and it records the kill with the category
+// and reason from the latest snapshot.
+func TestKillNow(t *testing.T) {
+	s := &store{cfg: sanitize(cfgWith())}
+	w := newWatcher(s)
+	w.now = func() time.Time { return now }
+	w.sample = func() (Snapshot, error) {
+		return Snapshot{IdleFor: 90 * time.Second, Requests: []Request{req("vlc.exe")}}, nil
+	}
+	var killed []string
+	w.kill = func(exe string) error { killed = append(killed, exe); return nil }
+
+	w.tick() // populate the snapshot killNow reads its history fields from
+	if err := w.killNow("VLC.exe"); err != nil {
+		t.Fatalf("killNow: %v", err)
+	}
+	if !equal(killed, []string{"vlc.exe"}) {
+		t.Fatalf("expected vlc.exe killed (normalised), got %v", killed)
+	}
+
+	h := s.get().History
+	if len(h) != 1 {
+		t.Fatalf("expected one history entry, got %d", len(h))
+	}
+	if h[0].Exe != "vlc.exe" || h[0].IdleSecs != 90 {
+		t.Errorf("history entry = %+v", h[0])
+	}
+	if h[0].Category == "" {
+		t.Error("history entry lost the category from the snapshot")
+	}
+}
+
+// A failed kill is not a kill: it must not reach the history. Nothing else in
+// the app distinguishes "closed" from "tried to close", so this is the only
+// place the rule can be enforced.
+func TestKillNowDoesNotRecordFailures(t *testing.T) {
+	s := &store{cfg: sanitize(cfgWith())}
+	w := newWatcher(s)
+	w.now = func() time.Time { return now }
+	w.kill = func(string) error { return errSampleFailed }
+
+	if err := w.killNow("vlc.exe"); err == nil {
+		t.Fatal("expected the kill error to be returned")
+	}
+	if h := s.get().History; len(h) != 0 {
+		t.Fatalf("a failed kill was recorded: %+v", h)
+	}
+}
+
+// A manual close must drop any countdown for the same app, or the next tick
+// would resume warning about a process that no longer exists.
+//
+// This checks w.pending rather than status().Pending on purpose: the published
+// Status is only rebuilt on the next tick, so the overlay clears within 5s
+// rather than instantly. That is exactly how Snooze already behaves, and is
+// not worth a second publish path.
+func TestKillNowClearsPendingCountdown(t *testing.T) {
+	s := &store{cfg: sanitize(cfgWith(WatchEntry{Exe: "vlc.exe", TimeoutMinutes: 1}))}
+	w := newWatcher(s)
+	w.now = func() time.Time { return now }
+	w.sample = func() (Snapshot, error) {
+		return Snapshot{IdleFor: 10 * time.Minute, Requests: []Request{req("vlc.exe")}}, nil
+	}
+	w.kill = func(string) error { return nil }
+
+	w.tick() // starts the warning countdown
+	if len(w.status().Pending) != 1 {
+		t.Fatalf("expected a pending countdown, got %v", w.status().Pending)
+	}
+	if err := w.killNow("vlc.exe"); err != nil {
+		t.Fatal(err)
+	}
+	w.mu.Lock()
+	left := len(w.pending)
+	w.mu.Unlock()
+	if left != 0 {
+		t.Fatalf("countdown survived a manual close: %v", w.pending)
+	}
+	// And the next tick must not resurrect it from the stale published Status.
+	w.tick()
+	if p := w.status().Pending; len(p) != 1 {
+		t.Fatalf("a still-running app should start a fresh countdown, got %v", p)
+	}
+}
