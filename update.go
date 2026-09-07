@@ -38,9 +38,10 @@ const (
 	updateManifestURL = "https://github.com/wjmpantig/nightcap/releases/latest/download/update.json"
 	updateSigURL      = updateManifestURL + ".sig"
 
-	// Raw 32-byte ed25519 public key, hex. Empty until one is generated, which
-	// disables update checks entirely rather than trusting anything. Generate
-	// with:
+	// Raw 32-byte ed25519 public key, hex. This is the trust anchor for every
+	// update nightcap will ever be told about, and it cannot be changed for a
+	// binary already shipped. Leaving it empty disables update checks entirely,
+	// which is the right default before a key exists. Generated with:
 	//
 	//	openssl genpkey -algorithm ed25519 -out nightcap-update.pem
 	//	openssl pkey -in nightcap-update.pem -pubout -outform DER | tail -c 32 | xxd -p -c 32
@@ -48,7 +49,7 @@ const (
 	// (Needs real OpenSSL; macOS's /usr/bin/openssl is LibreSSL and has no
 	// -rawin.) The private half lives in the UPDATE_SIGNING_KEY repo secret
 	// and nowhere in this tree.
-	updateKeyHex = ""
+	updateKeyHex = "3a0733e026074814c30d4d0352da3445e1f8c8bff0fb4a40cde93bf4cc0121ae"
 )
 
 // Update is what the frontend is told about a newer release. It has no slice
