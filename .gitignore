@@ -2,6 +2,7 @@ build/bin
 node_modules
 frontend/dist
 site/dist
+site/.vite
 
 # playwright-mcp scratch screenshots
 .playwright-mcp
