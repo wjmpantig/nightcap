@@ -1,6 +1,10 @@
 build/bin
 node_modules
 frontend/dist
+site/dist
+
+# playwright-mcp scratch screenshots
+.playwright-mcp
 
 # stray build output
 /nightcap.exe

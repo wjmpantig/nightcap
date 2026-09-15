@@ -1,0 +1,46 @@
+@use "@/design/styles/units" as *;
+
+.page {
+  position: relative;
+  min-height: 100vh;
+  color: var(--text-primary);
+  font: var(--type-body);
+  overflow-x: hidden;
+}
+
+/* The one gradient in nightcap. The app window is flat colour by rule; this is
+   the marketing surface the design template asks for, and it lives only here. */
+.glow {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    #{rem(900px)} #{rem(480px)} at 50% -10%,
+    var(--moonlight-a16),
+    transparent 70%
+  );
+}
+
+/* One gutter, set once. padding-block keeps the sides intact at every width. */
+.wrap {
+  position: relative;
+  max-width: #{rem(1180px)};
+  margin: 0 auto;
+  padding-inline: clamp(#{rem(20px)}, 5vw, #{rem(64px)});
+}
+
+.section {
+  padding-block-start: clamp(#{rem(64px)}, 10vw, #{rem(128px)});
+}
+
+.narrow {
+  max-width: #{rem(820px)};
+}
+
+.mid {
+  max-width: #{rem(1000px)};
+}
+
+.mockSection {
+  padding-block-start: clamp(#{rem(44px)}, 7vw, #{rem(86px)});
+}

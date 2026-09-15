@@ -1,0 +1,36 @@
+@use "@/design/styles/units" as *;
+
+.footer {
+  position: relative;
+  margin-top: clamp(#{rem(64px)}, 10vw, #{rem(120px)});
+  border-top: var(--border-hairline) solid var(--line);
+}
+
+.inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+  max-width: #{rem(1180px)};
+  margin: 0 auto;
+  padding: var(--space-9) clamp(#{rem(20px)}, 5vw, #{rem(64px)});
+  color: var(--text-muted);
+  font: var(--type-body);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-7);
+
+  a {
+    color: var(--text-muted);
+    border-bottom: none;
+    transition: var(--transition-control);
+
+    &:hover {
+      color: var(--text-primary);
+    }
+  }
+}

@@ -87,6 +87,12 @@ type watcher struct {
 	pending map[string]time.Time // exe -> kill deadline
 	last    Status
 
+	// onStatus is the one hook for "the picture changed", set by setupTray via
+	// App.setOnStatus. Same reasoning as store.watch() and App.setOnUpdate: the
+	// next consumer registers here rather than publish() growing a second
+	// notifier that the following call site forgets about.
+	onStatus func(Status)
+
 	// injectable for tests / future platforms
 	sample func() (Snapshot, error)
 	kill   func(exe string) error
@@ -252,9 +258,27 @@ func (w *watcher) publish(st Status) {
 	st = normalize(st)
 	w.mu.Lock()
 	w.last = st
+	hook := w.onStatus
 	w.mu.Unlock()
 	if w.ctx != nil {
 		runtime.EventsEmit(w.ctx, "status", st)
+	}
+	// Outside the lock, like store.watch()'s: a tray callback must not be able
+	// to deadlock the next tick by reading the status back.
+	if hook != nil {
+		hook(st)
+	}
+}
+
+// watch registers the status hook and replays the last status, so it does not
+// matter whether the first tick or the tray got here first.
+func (w *watcher) watch(f func(Status)) {
+	w.mu.Lock()
+	w.onStatus = f
+	st := normalize(w.last)
+	w.mu.Unlock()
+	if f != nil {
+		f(st)
 	}
 }
 

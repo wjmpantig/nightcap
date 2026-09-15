@@ -1,0 +1,46 @@
+@use "@/design/styles/units" as *;
+
+.heading {
+  margin: 0 0 var(--space-10);
+  font-family: var(--font-display);
+  font-weight: var(--weight-medium);
+  font-size: clamp(#{rem(26px)}, 3.4vw, #{rem(40px)});
+  line-height: var(--leading-tight);
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, #{rem(240px)}), 1fr));
+  gap: clamp(#{rem(20px)}, 3vw, #{rem(40px)});
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.n {
+  color: var(--text-accent);
+  font: var(--type-mono-sm);
+  letter-spacing: 0.1em;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--weight-medium);
+  font-size: #{rem(19px)};
+  line-height: var(--leading-snug);
+}
+
+.body {
+  margin: 0;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: #{rem(15px)};
+  line-height: var(--leading-loose);
+  text-wrap: pretty;
+}
