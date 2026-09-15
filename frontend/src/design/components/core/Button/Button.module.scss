@@ -13,6 +13,7 @@
   letter-spacing: var(--tracking-tight);
   cursor: pointer;
   white-space: nowrap;
+  text-decoration: none; /* the href variant renders an <a> */
   transition: var(--transition-control);
   user-select: none;
 
