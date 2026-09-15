@@ -1,0 +1,24 @@
+@use "@/design/styles/units" as *;
+
+.cta {
+  text-align: center;
+}
+
+.heading {
+  margin: 0 auto;
+  max-width: 20ch;
+  font-family: var(--font-display);
+  font-weight: var(--weight-medium);
+  font-size: clamp(#{rem(30px)}, 5vw, #{rem(56px)});
+  line-height: var(--leading-tight);
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-5);
+  margin-top: var(--space-9);
+}

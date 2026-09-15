@@ -1,0 +1,26 @@
+/* The app's design system, unmodified: same tokens, same type, same colours.
+   Changing a token in frontend/src/design/tokens moves the app and this page
+   together, which is the whole reason the site imports source rather than a copy. */
+@use "@/design/styles" as *;
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  /* Every surface on this page sits on the app window's own background. */
+  background: var(--surface-app);
+  overflow-x: hidden;
+}
+
+/* Anchors are the only navigation on a one-page site. */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

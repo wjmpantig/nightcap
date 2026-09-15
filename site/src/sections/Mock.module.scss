@@ -1,0 +1,49 @@
+@use "@/design/styles/units" as *;
+
+.frame {
+  border: var(--border-hairline) solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface-panel);
+  box-shadow: var(--shadow-overlay);
+  overflow: hidden;
+}
+
+.titlebar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  height: var(--titlebar-height);
+  padding: 0 var(--space-5);
+  border-bottom: var(--border-hairline) solid var(--line);
+  background: var(--surface-tile);
+}
+
+.dot {
+  width: #{rem(10px)};
+  height: #{rem(10px)};
+  border-radius: var(--radius-pill);
+  background: var(--night-500);
+  flex: none;
+}
+
+.title {
+  margin-left: var(--space-4);
+  color: var(--text-muted);
+  font: var(--type-mono-sm);
+}
+
+.rows {
+  padding: var(--space-3) var(--space-5);
+}
+
+/* Rows separate with one hairline and the last one doesn't need it. */
+.rows > *:last-child {
+  border-bottom: none;
+}
+
+/* The leading slot is fixed-width so the exe names line up, badge or not. */
+.state {
+  display: flex;
+  flex: none;
+  width: #{rem(116px)};
+}
