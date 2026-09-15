@@ -190,6 +190,39 @@ properties and the `[data-theme="light"]` swap, which have to be global to casca
 one component that is not a folder: it is the entry `main.tsx` imports. It still has an
 `App.module.scss`.
 
+## Website
+
+`site/` is a second Vite app — the one-page marketing site at
+`https://wjmpantig.github.io/nightcap/`, deployed by `.github/workflows/pages.yml` on push to
+master. It is not part of the Wails build and `wails build` must never learn about it.
+
+**It shares the design system as source, not as a copy.** `site/`'s own `@` alias points at
+`frontend/src`, so `Lockup`, `Badge`, `Button`, `Panel`, `ListRow` and `ProcessName` on the page are
+the components the app ships and the tokens are the app's tokens. Never fork a component into
+`site/` — fix it in `frontend/src/design/` and both surfaces move. What makes this work is that
+nothing under `frontend/src/design/` imports `@/bridge`, `wailsjs`, or touches `window.go`; the site
+build is what will catch a violation of that. `site/README.md` has the three build settings the
+arrangement needs (the alias that Sass also honours, `server.fs.allow`, and `resolve.dedupe` for
+React) and the reason for each.
+
+`base` is `/nightcap/` because Pages serves a project site, so `public/` assets are referenced
+relatively, never with a leading slash. The first deploy needs Settings → Pages → Source: "GitHub
+Actions" set by hand once — no workflow can do it.
+
+**The design source of truth is a Claude Design project**, `nightcap Design System` at
+<https://claude.ai/design/p/1bd256d4-25dd-4bcb-83be-214840e03650>, read and written through the
+`DesignSync` tool. `ui_kits/desktop/` there is the app, `templates/marketing-site/` is this site,
+and `readme.md` there is the same document as `frontend/src/design/README.md`. The site's copy
+deliberately diverges from that template where the template claimed things nightcap does not
+measure — the table in `site/README.md` says which, and that table is the thing to keep true if the
+template is ever re-imported.
+
+Two of the design system's rules are relaxed for `site/` only, and nowhere else: the page carries
+one radial gradient behind the hero (the app window stays flat colour), and site sections are flat
+files under `src/sections/` rather than a folder each, because they are one-use page fragments and
+not a component library. The app mock on the page is built from `ListRow`/`Badge`/`ProcessName`
+rather than a screenshot, so it cannot drift from what the app renders.
+
 ## Conventions
 
 - **Micro commits, conventional prefixes.** One reviewable idea per commit, each one building and
