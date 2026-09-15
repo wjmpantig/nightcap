@@ -43,7 +43,7 @@ export function Mock() {
         <span className={styles.dot} />
         <span className={styles.dot} />
         <span className={styles.dot} />
-        <span className={styles.title}>nightcap — 1 keeping this machine awake</span>
+        <span className={styles.title}>nightcap — 1 thing is keeping this machine awake</span>
       </div>
       <div className={styles.rows}>
         {ROWS.map((row) => (

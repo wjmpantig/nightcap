@@ -93,11 +93,24 @@ adding build tags or mocking frameworks.
   platform kill from a call site to skip them. The UI offers one Close button per
   `Request.targets()` entry rather than one per `Exe` for the same reason: a shared runtime's own
   name is refused.
+- **Anything that must react to a status change hooks `watcher.watch()`, not the caller.** Same rule
+  and same reason as `store.watch()` below: `publish()` is the single funnel every `Status` passes
+  through, so the hook lives there and fires outside the lock, and `watch()` replays the last status
+  so a consumer registered after the first tick is not left dark. `App.setOnStatus` is the routing
+  for main.go's benefit, not a second notifier.
 - **Anything that must react to a config change hooks `store.watch()`, not the caller.** `update()`
   in `config.go` is the only way the config ever changes, so the tray follows the paused state from
   there and sees it however it was set — window switch, settings view, tray menu. Adding a second
   notifier at a call site means the next call site forgets. The hook fires outside the lock (so it
   cannot deadlock a write by reading the config back) and with the *sanitised* config.
+- **A lit tray mark means something is holding a wake lock — not that nightcap is running.**
+  `trayIcon()`/`trayTooltip()` in `main.go` are the whole mapping, over a `trayState` fed from two
+  places: `store.watch()` supplies `paused`, `watcher.watch()` (via `App.setOnStatus`) supplies the
+  live count and whether the last query failed. There are only two pieces of art, so paused, blind
+  and "nothing is awake" all read as dim and the *tooltip* is what separates them — which is the
+  same rule as everywhere else: "I couldn't check" must never look like "nothing is keeping you
+  awake". `TestTrayIcon` and `TestTrayTooltip` pin it, and the website says this in so many words,
+  so changing the meaning means changing `site/src/sections/Features.tsx` too.
 - **Tray art is never scaled.** `build/windows/tray-{active,inactive}.ico` are packed from the brand
   pack's hand-drawn per-size PNGs by `make-tray-ico.py`; at 16–24px a 1px gap opens between the disc
   and the horizon that a downscaled 48px image loses. Re-run that script if the art changes.

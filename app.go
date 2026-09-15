@@ -121,6 +121,13 @@ func (a *App) setOnUpdate(f func(Update)) {
 	}
 }
 
+// setOnStatus registers the tray's status hook on the watcher, which replays
+// the last status immediately. Routed through App because that is what main.go
+// holds; the hook itself lives on the watcher, next to the publish() it fires from.
+func (a *App) setOnStatus(f func(Status)) {
+	a.watcher.watch(f)
+}
+
 // GetUpdate returns the newest release seen, or a zero Update if none. The
 // frontend also receives this as an "update" event; this is for the initial
 // render, since the first check lands well after the window does.

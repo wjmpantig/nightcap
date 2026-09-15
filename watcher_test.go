@@ -304,3 +304,16 @@ func TestKillNowClearsPendingCountdown(t *testing.T) {
 		t.Fatalf("a still-running app should start a fresh countdown, got %v", p)
 	}
 }
+
+// A tray built after the first tick must not sit dark until the next one.
+func TestWatchReplaysTheLastStatus(t *testing.T) {
+	w := newWatcher(&store{cfg: sanitize(Config{})})
+	w.publish(Status{Requests: []Request{{Exe: "vlc.exe"}}})
+
+	var got Status
+	w.watch(func(s Status) { got = s })
+
+	if len(got.Requests) != 1 {
+		t.Fatalf("watch() replayed %d requests, want 1", len(got.Requests))
+	}
+}

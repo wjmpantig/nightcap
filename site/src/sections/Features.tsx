@@ -20,7 +20,7 @@ const FEATURES = [
   },
   {
     title: "Lives in the tray",
-    body: "One glance: the mark is lit while something is holding a wake lock and dim when the machine is settled. Pause everything from the tray menu without losing the watchlist.",
+    body: "One glance: the mark is lit while something is holding a wake lock and dim once the machine has settled. Pausing dims it too, and the tooltip says which of the two it is. Pause from the tray menu without losing the watchlist.",
   },
   {
     title: "Fullscreen is not a loophole",
