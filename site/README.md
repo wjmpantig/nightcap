@@ -4,10 +4,18 @@ The nightcap website: one page, built from the app's own design system and publi
 <https://wjmpantig.github.io/nightcap/> by `.github/workflows/pages.yml`.
 
 ```sh
-npm install
+npm install      # and npm install in ../frontend too — see below
 npm run dev      # http://127.0.0.1:5173/nightcap/
 npm run build    # dist/
 ```
+
+**`frontend/node_modules` has to exist for this to build.** Both tsc and Rollup resolve a bare
+import by walking up from the *importing* file, so `react`, `clsx` and `lucide-react` imported by a
+component in `frontend/src` are looked for in `frontend/node_modules` and never in `site/node_modules`.
+Nothing here can paper over that — a `paths` fallback fixes tsc and leaves Rollup broken, and a
+hand-listed `resolve.dedupe` rots the next time a shared component takes a dependency. Installing
+the package the shared source belongs to is the fix, and `pages.yml` does both installs for the
+same reason.
 
 ## It shares source with the app, it does not copy it
 
@@ -21,8 +29,8 @@ The three things that make the sharing work, all in `vite.config.ts`:
 - the `@` alias, which Vite also applies to the `@use "@/design/styles/units"` at the top of every
   shared `.module.scss`;
 - `server.fs.allow`, because `frontend/src` is outside this Vite root;
-- `resolve.dedupe` for react/react-dom, or a bare import inside `frontend/src` can resolve to
-  `frontend/node_modules` and give the page two Reacts.
+- `resolve.dedupe` for react/react-dom, so the page gets one React rather than one from each
+  `node_modules`. Note this only pins the names it lists — it is not what makes resolution work.
 
 `base` is `/nightcap/` because Pages serves this as a project site, so anything in `public/` is
 referenced relatively, never with a leading slash.

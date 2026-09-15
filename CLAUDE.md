@@ -214,9 +214,17 @@ master. It is not part of the Wails build and `wails build` must never learn abo
 the components the app ships and the tokens are the app's tokens. Never fork a component into
 `site/` — fix it in `frontend/src/design/` and both surfaces move. What makes this work is that
 nothing under `frontend/src/design/` imports `@/bridge`, `wailsjs`, or touches `window.go`; the site
-build is what will catch a violation of that. `site/README.md` has the three build settings the
+build is what will catch a violation of that. `site/README.md` has the build settings the
 arrangement needs (the alias that Sass also honours, `server.fs.allow`, and `resolve.dedupe` for
 React) and the reason for each.
+
+**Building `site/` needs `frontend/node_modules` to exist.** tsc and Rollup both resolve a bare
+import by walking up from the *importing* file, so `react`, `clsx` and `lucide-react` imported by a
+component in `frontend/src` are looked for under `frontend/`, never under `site/`. `pages.yml` runs
+`npm ci` in both directories for exactly that reason — don't "optimise" the frontend one away, and
+don't reach for a tsconfig `paths` fallback or a longer `resolve.dedupe` instead: the first fixes
+tsc and leaves Rollup broken, and the second is a hand-maintained copy of the dependency list that
+goes stale the next time a shared component imports something.
 
 `base` is `/nightcap/` because Pages serves a project site, so `public/` assets are referenced
 relatively, never with a leading slash. The first deploy needs Settings → Pages → Source: "GitHub

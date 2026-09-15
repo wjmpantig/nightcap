@@ -29,8 +29,7 @@
   "include": [
     "src",
     "../frontend/src/design",
-    "../frontend/src/utils",
-    "../frontend/src/vite-env.d.ts"
+    "../frontend/src/utils"
   ],
   "references": [
     {

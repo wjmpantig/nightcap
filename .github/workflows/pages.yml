@@ -40,10 +40,20 @@ jobs:
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: site/package-lock.json
+          cache-dependency-path: |
+            site/package-lock.json
+            frontend/package-lock.json
 
-      # The site imports frontend/src/design directly, so the checkout above is
-      # the only source it needs — frontend's own node_modules is never installed.
+      # Both installs are needed. The site imports components out of
+      # frontend/src, and tsc and Rollup both resolve a bare import by walking up
+      # from the *importing* file — so react, clsx and lucide-react are looked for
+      # in frontend/node_modules and never in site/node_modules. Installing the
+      # package the shared source actually belongs to is what makes that work, and
+      # it cannot rot the way a hand-listed dedupe or a tsconfig paths fallback
+      # would the next time a component takes a dependency.
+      - run: npm ci
+        working-directory: frontend
+
       - run: npm ci
         working-directory: site
 
